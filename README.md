@@ -1,11 +1,11 @@
-# 🧬 Single-Cell Transcriptomics Docker Workflow
+# Single-Cell Transcriptomics Docker Workflow
 
 This repository provides a modular, containerized workflow for **single-cell RNA sequencing (scRNA-seq) data analysis**, supporting both **dense and sparse matrix inputs**.  
 While **PIPSeeker** is the default preprocessing module, the workflow is compatible with any equivalent tool that outputs a valid **matrix format** (e.g. `.mtx`, `.h5ad`, `.loom`, `.csv`).
 
 ---
 
-## ⚡ Quick Start Diagram (Mermaid)
+## Quick Start Diagram (Mermaid)
 
 ```mermaid
 flowchart LR
@@ -30,9 +30,9 @@ flowchart LR
 
 ---
 
-## 📊 Workflow Overview
+## Workflow Overview
 
-This workflow automates end-to-end single-cell data processing — from initial QC and normalization to pseudotime and multi-species comparison.
+This workflow automates end-to-end single-cell data processing — from initial QC and normalization to pseudotime and multi-tissue comparison.
 
 ```
  ┌────────────────────────┐
@@ -66,7 +66,7 @@ This workflow automates end-to-end single-cell data processing — from initial 
 
 ---
 
-## 🧱 Unified Docker Container
+## Unified Docker Container
 
 The workflow runs in a **single, unified Docker container** (`sc_toolkit`) that includes all analysis modules for reproducibility and portability. The container is built with:
 
@@ -83,14 +83,14 @@ The workflow runs in a **single, unified Docker container** (`sc_toolkit`) that 
 | **Normalization** | CLI: `sc_toolkit normalize` | Seurat (LogNormalize, SCTransform) or JMP (TMM, RLE, Upper Quartile) methods. |
 | **Dimensional Reduction** | CLI: `sc_toolkit umap` | UMAP / PCA visualization for sample exploration. |
 | **Pseudotime Analysis** | CLI: `sc_toolkit pseudotime` | BLTSA (R-based) or Diffusion Pseudotime analysis. |
+| **ChatGPT Cell Type ID** | CLI: `sc_toolkit AItype` | AI-powered cell type identification using marker genes and ChatGPT API. |
 
 ### Planned Expansions
 
 | Module | Status | Description |
 |---------|--------|-------------|
-| **ChatGPT Cell Type ID** | 🚧 In Development | AI-powered cell type identification using marker genes and ChatGPT API. |
-| **Atlas-Level Analysis** | 📋 Planned | Multi-species and complex trait pseudotime via StaVIA. |
-| **Mouse Reference Alignment** | 📋 Planned | Aligns results with reference mouse cell-type databases. |
+| **Atlas-Level Analysis** | In Development as separate Docker container | Multi-species and complex trait pseudotime via StaVIA. |
+| **Mouse and Human Reference Alignment** | Planned | Aligns results with reference mouse and human cell-type databases. |
 
 ### Docker Build
 
@@ -110,7 +110,7 @@ docker run -it --rm -v $(pwd)/data:/data sc_toolkit:0.1 --help
 
 ---
 
-## 📂 Directory Structure
+## Directory Structure
 
 ```
 project_root/
@@ -142,7 +142,7 @@ project_root/
 
 ---
 
-## ⚙️ Configuration (`config/config.yaml`)
+## Configuration (`config/config.yaml`)
 
 Example configuration file to control module execution and parameters:
 
@@ -183,7 +183,7 @@ output:
 
 ---
 
-## 🧩 Running the Workflow
+## Running the Workflow
 
 ### Option 1: Command-Line Interface (Recommended)
 
@@ -215,6 +215,11 @@ docker run -v $(pwd)/data:/data sc_toolkit:0.1 pseudotime \
     --input /data/output/normalized.h5ad \
     --method bltsa \
     --output /data/output/pseudotime/
+
+# Run ChatGPT API cell typing
+docker run -v $(pwd)/data:/data sc_toolkit:0.1 AItyping \
+    --input /data/output/normalized.h5ad \
+    --output /data/output/AItyping/
 ```
 
 ### Option 2: Docker Compose (Future Multi-Service Orchestration)
@@ -235,7 +240,7 @@ services:
   # Future services (when implemented):
   # chatgpt-celltype:
   #   extends: sc_toolkit
-  #   command: ["celltype", "--timing", "pre_analysis"]
+  #   command: ["AItyping", "--timing", "pre_analysis"]
   #   environment:
   #     - OPENAI_API_KEY=${OPENAI_API_KEY}
 ```
