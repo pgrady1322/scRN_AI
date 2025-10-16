@@ -81,15 +81,15 @@ The workflow runs in a **single, unified Docker container** (`sc_toolkit`) that 
 |---------|---------------|-------------|
 | **Initial Processing** | CLI: `sc_toolkit preprocess` | QC, filtering, normalization. Accepts `.mtx`, `.h5ad`, `.loom`, `.csv`. |
 | **Normalization** | CLI: `sc_toolkit normalize` | Seurat (LogNormalize, SCTransform) or JMP (TMM, RLE, Upper Quartile) methods. |
+| **AI Cell Type Identification** | CLI: `sc_toolkit AItyping` | **NEW** - AI-powered cell type identification using marker genes and ChatGPT API. |
 | **Dimensional Reduction** | CLI: `sc_toolkit umap` | UMAP / PCA visualization for sample exploration. |
 | **Pseudotime Analysis** | CLI: `sc_toolkit pseudotime` | BLTSA (R-based) or Diffusion Pseudotime analysis. |
-| **ChatGPT Cell Type ID** | CLI: `sc_toolkit AItype` | AI-powered cell type identification using marker genes and ChatGPT API. |
 
 ### Planned Expansions
 
 | Module | Status | Description |
 |---------|--------|-------------|
-| **Atlas-Level Analysis** | In Development as separate Docker container | Multi-species and complex trait pseudotime via StaVIA. |
+| **Atlas-Level Analysis** | In Development | Multi-species and complex trait pseudotime via StaVIA (separate Docker container). |
 | **Mouse and Human Reference Alignment** | Planned | Aligns results with reference mouse and human cell-type databases. |
 
 ### Docker Build
@@ -163,15 +163,16 @@ normalization:
   jmp_method: "TMM"  # Options: TMM, RLE, UpperQuartile
   scale_factor: 10000
 
-cell_type_identification:
+AItyping:
   enabled: true
   timing: "pre_analysis"  # Options: pre_analysis, post_analysis, both
-  chatgpt_model: "gpt-4"  # Options: gpt-4, gpt-3.5-turbo
-  api_key_path: "./config/openai_api_key.txt"
+  model: "gpt-4"  # Options: gpt-4, gpt-4-turbo, gpt-3.5-turbo
+  api_key: "${OPENAI_API_KEY}"  # Set via environment variable
   marker_genes_auto: true  # Auto-detect from top variable genes
   custom_markers: []  # Optional: provide custom marker gene list
   confidence_threshold: 0.7
-
+  max_clusters: 50  # Maximum number of clusters to annotate
+  
 analysis:
   run_umap: true
   run_pseudotime: true
@@ -210,21 +211,34 @@ docker run -v $(pwd)/data:/data sc_toolkit:0.1 umap \
     --input /data/output/normalized.h5ad \
     --output /data/output/umap.png
 
+# Run AI-powered cell type identification
+docker run -v $(pwd)/data:/data sc_toolkit:0.1 AItyping \
+    --input /data/output/normalized.h5ad \
+    --output /data/output/cell_types/ \
+    --timing pre_analysis
+
+# Run UMAP with cell type labels
+docker run -v $(pwd)/data:/data sc_toolkit:0.1 umap \
+    --input /data/output/normalized.h5ad \
+    --output /data/output/umap.png \
+    --cell-types /data/output/cell_types/annotations.csv
+
 # Run BLTSA pseudotime
 docker run -v $(pwd)/data:/data sc_toolkit:0.1 pseudotime \
     --input /data/output/normalized.h5ad \
     --method bltsa \
     --output /data/output/pseudotime/
 
-# Run ChatGPT API cell typing
+# Optional: Run post-analysis cell type refinement
 docker run -v $(pwd)/data:/data sc_toolkit:0.1 AItyping \
-    --input /data/output/normalized.h5ad \
-    --output /data/output/AItyping/
+    --input /data/output/pseudotime/results.h5ad \
+    --output /data/output/cell_types/ \
+    --timing post_analysis
 ```
 
-### Option 2: Docker Compose (Future Multi-Service Orchestration)
+### Option 2: Docker Compose (Full Pipeline Orchestration)
 
-For the planned multi-module expansion with ChatGPT integration and atlas alignment:
+For automated pipeline execution with all modules:
 
 ```yaml
 version: "3.8"
@@ -235,14 +249,39 @@ services:
     volumes:
       - ./data:/data
       - ./config:/config
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     command: ["--config", "/config/config.yaml"]
-    
-  # Future services (when implemented):
-  # chatgpt-celltype:
-  #   extends: sc_toolkit
-  #   command: ["AItyping", "--timing", "pre_analysis"]
-  #   environment:
-  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  # Run with specific modules
+  preprocess:
+    image: sc_toolkit:0.1
+    volumes:
+      - ./data:/data
+    command: ["preprocess", "--input", "/data/input/dataset.h5ad"]
+
+  normalize:
+    image: sc_toolkit:0.1
+    depends_on: [preprocess]
+    volumes:
+      - ./data:/data
+    command: ["normalize", "--input", "/data/output/processed.h5ad"]
+
+  AItyping:
+    image: sc_toolkit:0.1
+    depends_on: [normalize]
+    volumes:
+      - ./data:/data
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    command: ["AItyping", "--input", "/data/output/normalized.h5ad", "--timing", "pre_analysis"]
+
+  analysis:
+    image: sc_toolkit:0.1
+    depends_on: [AItyping]
+    volumes:
+      - ./data:/data
+    command: ["umap", "--input", "/data/output/normalized.h5ad"]
 ```
 
 ### Option 3: Interactive Session
@@ -260,7 +299,7 @@ sc_toolkit normalize --input /data/processed.h5ad --method seurat
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### 1. Clone Repository
 ```bash
@@ -286,6 +325,7 @@ mkdir -p data/input data/output
 ```bash
 # Using config file
 docker run -v $(pwd)/data:/data -v $(pwd)/config:/config \
+    -e OPENAI_API_KEY=$OPENAI_API_KEY \
     sc_toolkit:0.1 --config /config/config.yaml
 
 # Or step-by-step:
@@ -294,6 +334,12 @@ docker run -v $(pwd)/data:/data sc_toolkit:0.1 preprocess \
 
 docker run -v $(pwd)/data:/data sc_toolkit:0.1 normalize \
     --input /data/output/processed.h5ad --method seurat
+
+docker run -v $(pwd)/data:/data -e OPENAI_API_KEY=$OPENAI_API_KEY \
+    sc_toolkit:0.1 AItyping \
+    --input /data/output/normalized.h5ad \
+    --output /data/output/cell_types/ \
+    --timing pre_analysis
 
 docker run -v $(pwd)/data:/data sc_toolkit:0.1 umap \
     --input /data/output/normalized.h5ad
@@ -304,7 +350,7 @@ docker run -v $(pwd)/data:/data sc_toolkit:0.1 pseudotime \
 
 ### 5. Inspect Results
 - Normalized data: `./data/output/normalized/`
-- Cell type annotations: `./data/output/cell_types/` (when ChatGPT module is implemented)
+- **Cell type annotations**: `./data/output/cell_types/` **Now Available via AItyping**
 - Processed data: `./data/output/processed/`
 - Pseudotime trajectories: `./data/output/pseudotime/`
 - Visualizations: `./data/output/visualization/`
@@ -318,15 +364,42 @@ docker run sc_toolkit:0.1 --help
 # Get help for specific command
 docker run sc_toolkit:0.1 preprocess --help
 docker run sc_toolkit:0.1 normalize --help
+docker run sc_toolkit:0.1 AItyping --help
 docker run sc_toolkit:0.1 umap --help
 docker run sc_toolkit:0.1 pseudotime --help
 ```
 
 ---
 
-## 🤖 ChatGPT Cell Type Identification
+## AI-Powered Cell Type Identification (`AItyping`)
 
-The pipeline integrates **ChatGPT-based cell type identification** at two strategic points in the workflow:
+The pipeline now includes **`sc_toolkit AItyping`** - an AI-powered cell type identification module that leverages ChatGPT to automatically annotate cell clusters at two strategic points in your workflow.
+
+### Command Usage
+
+```bash
+# Basic usage
+docker run -v $(pwd)/data:/data -e OPENAI_API_KEY=$OPENAI_API_KEY \
+    sc_toolkit:0.1 AItyping \
+    --input /data/output/normalized.h5ad \
+    --output /data/output/cell_types/
+
+# Pre-analysis typing (before UMAP/pseudotime)
+docker run -v $(pwd)/data:/data -e OPENAI_API_KEY=$OPENAI_API_KEY \
+    sc_toolkit:0.1 AItyping \
+    --input /data/output/normalized.h5ad \
+    --output /data/output/cell_types/ \
+    --timing pre_analysis \
+    --model gpt-4
+
+# Post-analysis typing (after pseudotime/trajectories)
+docker run -v $(pwd)/data:/data -e OPENAI_API_KEY=$OPENAI_API_KEY \
+    sc_toolkit:0.1 AItyping \
+    --input /data/output/pseudotime/results.h5ad \
+    --output /data/output/cell_types/ \
+    --timing post_analysis \
+    --confidence-threshold 0.8
+```
 
 ### Pre-Analysis Cell Type ID
 **When**: After normalization, before dimensional reduction/analysis  
@@ -361,18 +434,34 @@ The pipeline integrates **ChatGPT-based cell type identification** at two strate
 - Identify transitional cell states
 - Compare with reference atlas annotations
 
-### Configuration Options
+### CLI Parameters
+
+```bash
+sc_toolkit AItyping [OPTIONS]
+
+Options:
+  --input PATH              Input .h5ad file with normalized expression data [required]
+  --output PATH             Output directory for cell type annotations [required]
+  --timing TEXT             When to run: pre_analysis, post_analysis, or both [default: pre_analysis]
+  --model TEXT              OpenAI model: gpt-4, gpt-4-turbo, gpt-3.5-turbo [default: gpt-4]
+  --confidence-threshold FLOAT  Minimum confidence score (0-1) [default: 0.7]
+  --marker-genes TEXT       Path to custom marker gene list (optional)
+  --max-clusters INT        Maximum number of clusters to annotate [default: 50]
+  --help                    Show this message and exit
+```
+
+### Configuration via YAML
 
 ```yaml
-cell_type_identification:
+AItyping:
   enabled: true
   timing: "both"  # Options: pre_analysis, post_analysis, both
-  chatgpt_model: "gpt-4"
-  api_key_path: "./config/openai_api_key.txt"
+  model: "gpt-4"  # Options: gpt-4, gpt-4-turbo, gpt-3.5-turbo
+  api_key: "${OPENAI_API_KEY}"  # Set via environment variable
   marker_genes_auto: true
   custom_markers: ["CD3D", "CD4", "CD8A"]  # Optional custom markers
   confidence_threshold: 0.7
-  max_clusters: 50  # Limit number of clusters to annotate
+  max_clusters: 50
 ```
 
 ### API Key Setup
@@ -393,7 +482,7 @@ Cell type annotations are saved as:
 
 ---
 
-## 🐳 Docker Image Architecture
+## Docker Image Architecture
 
 The `sc_toolkit` Docker image is built using a **three-stage multi-stage build** for optimization and reproducibility:
 
@@ -486,7 +575,7 @@ docker build --build-arg MAMBA_VER=1.5.6 -t sc_toolkit:custom .
 
 ---
 
-## 🧠 Notes
+## Notes
 
 - **Unified Container**: All workflow modules run in a single Docker image for simplified deployment
 - **PIPSeeker is optional** — any preprocessing tool that generates valid sparse or dense matrices can be used
@@ -499,27 +588,31 @@ docker build --build-arg MAMBA_VER=1.5.6 -t sc_toolkit:custom .
 
 ### Current Implementation Status
 
-✅ **Implemented**:
+**Implemented**:
 - Multi-stage Docker build with Ubuntu 24.04
 - Micromamba-based Python/R environment
 - BLTSA (R) pseudotime analysis
 - CLI framework with preprocessing, normalization, UMAP, pseudotime modules
+- **`AItyping` command** - ChatGPT-based cell type identification (NEW!)
 - Support for `.mtx`, `.h5ad`, `.loom`, `.csv` input formats
+- Pre and post-analysis cell type annotation workflows
+- OpenAI API integration with GPT-4 and GPT-3.5-turbo support
 
-🚧 **In Development**:
-- ChatGPT-based cell type identification (pre and post-analysis)
+**In Development**:
+- Updated Dockerfile with AItyping dependencies (coming soon)
 - Full docker-compose orchestration with multi-service architecture
 - Additional normalization methods (JMP TMM/RLE/Upper Quartile)
+- Enhanced marker gene auto-detection
 
-📋 **Planned**:
-- Atlas-level analysis with StaVIA
-- Mouse reference cell type database alignment
-- Automated marker gene detection
+**Planned**:
+- Atlas-level analysis with StaVIA (separate container)
+- Mouse and human reference cell type database alignment
 - Batch effect correction modules
+- Integration with additional LLM models (Claude, Llama)
 
 ---
 
-## 📜 Citation
+## Citation
 
 If you use this workflow, please cite:
 - Relevant single-cell analysis tools (Seurat, BLTSA, StaVIA, etc.)
