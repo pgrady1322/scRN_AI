@@ -10,14 +10,14 @@ While **PIPSeeker** is the default preprocessing module, the workflow is compati
 ```mermaid
 flowchart LR
     A[Raw scRNA-seq Data] --> B[PIPSeeker / Custom Preprocessing]
-    B -->|Pass| C[Immediate Processing (Seurat / JMP)]
-    B -->|Fail| D[Re-Sequencing]
+    B -- Pass --> C[Immediate Processing<br/>Seurat / JMP]
+    B -- Fail --> D[Re-Sequencing]
     C --> E[Long-Term Storage]
     E --> F{Analysis Type?}
-    F -->|Gene Enrichment| G[Dimensional Reduction (UMAP)]
-    F -->|Cell Differentiation| H[Pseudotime (BLTSA / Diffusion PT)]
-    F -->|Complex Trait / Multi-species| I[Atlas-Level (StaVIA)]
-    I --> J[Align Mouse Cell Typing Database]
+    F -- Gene Enrichment --> G[Dimensional Reduction<br/>UMAP]
+    F -- Cell Differentiation --> H[Pseudotime<br/>BLTSA / Diffusion PT]
+    F -- Complex Trait /<br/>Multi-species --> I[Atlas-Level<br/>StaVIA]
+    I --> J[Align Mouse Cell<br/>Typing Database]
 ```
 
 ---
