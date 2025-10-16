@@ -10,14 +10,16 @@ While **PIPSeeker** is the default preprocessing module, the workflow is compati
 ```mermaid
 flowchart LR
     A[Raw scRNA-seq Data] --> B[PIPSeeker / Custom Preprocessing]
-    B -- Pass --> C[Immediate Processing<br/>Seurat / JMP]
+    B -- Pass --> C{Normalization Method?}
     B -- Fail --> D[Re-Sequencing]
-    C --> E[Long-Term Storage]
-    E --> F{Analysis Type?}
-    F -- Gene Enrichment --> G[Dimensional Reduction<br/>UMAP]
-    F -- Cell Differentiation --> H[Pseudotime<br/>BLTSA / Diffusion PT]
-    F -- Complex Trait /<br/>Multi-species --> I[Atlas-Level<br/>StaVIA]
-    I --> J[Align Mouse Cell<br/>Typing Database]
+    C -- Seurat --> E[LogNormalize /<br/>SCTransform]
+    C -- JMP --> F[TMM / RLE /<br/>Upper Quartile]
+    E --> G{Analysis Type?}
+    F --> G
+    G -- Gene Enrichment --> H[Dimensional Reduction<br/>UMAP]
+    G -- Cell Differentiation --> I[Pseudotime<br/>BLTSA / Diffusion PT]
+    G -- Complex Trait /<br/>Multi-species --> J[Atlas-Level<br/>StaVIA]
+    J --> K[Align Mouse Cell<br/>Typing Database]
 ```
 
 ---
@@ -33,9 +35,10 @@ This workflow automates end-to-end single-cell data processing — from initial 
             │ Pass
             ▼
  ┌───────────────────────────────┐
- │  Filtering and Concatenation  │  ← Seurat / JMP
+ │   Normalization Selection     │
  └──────────┬────────────────────┘
-            │
+    │ Seurat → LogNormalize / SCTransform
+    │ JMP → TMM / RLE / Upper Quartile
             ▼
  ┌────────────────────────┐
  │    Analysis Decision   │
