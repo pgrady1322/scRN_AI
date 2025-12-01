@@ -1,0 +1,129 @@
+# Sample Configuration File for scrn_ai Pipeline
+# Copy this file and modify for your analysis
+
+# ============================================================================
+# INPUT CONFIGURATION
+# ============================================================================
+input:
+  # Path to input matrix file (required)
+  # Supported formats: .h5ad, .mtx, .loom, .csv
+  matrix_path: "./data/input/dataset.h5ad"
+  
+  # Optional: Path to metadata file
+  metadata_path: null
+  
+  # Input format (auto-detected if not specified)
+  # Options: h5ad, mtx, loom, csv
+  input_format: "h5ad"
+
+# ============================================================================
+# PREPROCESSING PARAMETERS
+# ============================================================================
+preprocessing:
+  # Minimum genes detected per cell (filters low-quality cells)
+  min_genes_per_cell: 200
+  
+  # Minimum cells expressing each gene (filters rare genes)
+  min_cells_per_gene: 3
+  
+  # Maximum genes per cell (optional - filters doublets/multiplets)
+  # Set to null to disable
+  max_genes_per_cell: null
+  
+  # Maximum mitochondrial content percentage (optional - filters dying cells)
+  # Set to null to disable, or use value like 20.0 for 20%
+  max_mito_pct: null
+
+# ============================================================================
+# NORMALIZATION PARAMETERS
+# ============================================================================
+normalization:
+  # Normalization method
+  # Options: seurat, jmp, log1p, scran, sctransform
+  method: "seurat"
+  
+  # Algorithm within method
+  # Seurat: LogNormalize, SCTransform
+  # JMP: TMM, RLE, UpperQuartile
+  algorithm: "LogNormalize"
+  
+  # Scale factor for normalization
+  scale_factor: 10000
+
+# ============================================================================
+# ANALYSIS CONFIGURATION
+# ============================================================================
+analysis:
+  # ---------------------------------------------------------------------------
+  # UMAP Visualization
+  # ---------------------------------------------------------------------------
+  run_umap: true
+  umap_n_neighbors: 15
+  umap_min_dist: 0.1
+  color_by: "leiden"  # Clustering method for coloring (leiden, louvain, etc.)
+  
+  # ---------------------------------------------------------------------------
+  # Pseudotime Analysis
+  # ---------------------------------------------------------------------------
+  run_pseudotime: false  # Set to true to enable pseudotime analysis
+  pseudotime_method: "dpt"  # Options: dpt, diffusion, bltsa, via
+  pseudotime_scale: "small"  # Options: small (<50k cells), large (>50k cells)
+  root_cell: null  # Optional: specify root cell ID for trajectory
+  
+  # ---------------------------------------------------------------------------
+  # AI Cell Type Identification
+  # ---------------------------------------------------------------------------
+  run_aitype: false  # Set to true to enable AI cell typing (requires OPENAI_API_KEY)
+  aitype_timing: "pre_analysis"  # Options: pre_analysis, post_analysis, both
+  aitype_model: "gpt-4"  # Options: gpt-4, gpt-4-turbo, gpt-3.5-turbo
+  aitype_confidence_threshold: 0.7  # Minimum confidence (0.0-1.0)
+  aitype_species: "human"  # Species: human, mouse, etc.
+  aitype_tissue: null  # Optional tissue type: brain, blood, etc.
+  aitype_n_markers: 10  # Number of marker genes per cluster
+
+# ============================================================================
+# OUTPUT CONFIGURATION
+# ============================================================================
+output:
+  # Directory for all output files
+  results_dir: "./output"
+  
+  # Save intermediate processing files
+  save_intermediate: true
+  
+  # Directory for pipeline checkpoints (enables resume functionality)
+  checkpoint_dir: "./checkpoints"
+
+# ============================================================================
+# EXECUTION SETTINGS
+# ============================================================================
+execution:
+  # Dry run mode (show execution plan without running)
+  dry_run: false
+  
+  # Resume from checkpoint (continue failed/interrupted pipeline)
+  resume: false
+  
+  # Skip steps that are already completed
+  skip_completed: true
+  
+  # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_level: "INFO"
+  
+  # Number of retries for failed steps
+  max_retries: 0
+
+# ============================================================================
+# ENVIRONMENT VARIABLE EXAMPLES
+# ============================================================================
+# You can use environment variable substitution:
+# 
+# input:
+#   matrix_path: "${DATA_DIR}/input/dataset.h5ad"
+#
+# Or with defaults:
+# output:
+#   results_dir: "${OUTPUT_DIR:-./output}"
+#
+# Required environment variables for AI typing:
+# export OPENAI_API_KEY="your-api-key-here"

@@ -1,0 +1,57 @@
+# Default Configuration Values for scrn_ai Pipeline
+# These values are used when not specified in config.yaml
+
+# Input configuration
+input:
+  input_format: "h5ad"  # Default to h5ad format (auto-detect if not specified)
+  metadata_path: null   # Optional metadata file
+
+# Preprocessing parameters
+preprocessing:
+  min_genes_per_cell: 200
+  min_cells_per_gene: 3
+  max_genes_per_cell: null  # No upper limit by default
+  max_mito_pct: null        # No mitochondrial filtering by default
+
+# Normalization parameters
+normalization:
+  method: "seurat"           # Default to Seurat method
+  algorithm: "LogNormalize"  # Default Seurat algorithm
+  scale_factor: 10000        # Standard scale factor
+
+# Analysis configuration
+analysis:
+  # UMAP settings
+  run_umap: true
+  umap_n_neighbors: 15
+  umap_min_dist: 0.1
+  color_by: "leiden"  # Default clustering for visualization
+  
+  # Pseudotime settings
+  run_pseudotime: false  # Opt-in for pseudotime
+  pseudotime_method: "dpt"
+  pseudotime_scale: "small"  # <50k cells
+  root_cell: null
+  
+  # AI cell typing settings
+  run_aitype: false  # Opt-in for AI typing
+  aitype_timing: "pre_analysis"  # pre_analysis, post_analysis, both
+  aitype_model: "gpt-4"
+  aitype_confidence_threshold: 0.7
+  aitype_species: "human"
+  aitype_tissue: null
+  aitype_n_markers: 10
+
+# Output configuration
+output:
+  results_dir: "./output"
+  save_intermediate: true  # Keep intermediate files
+  checkpoint_dir: "./checkpoints"  # For pipeline resume
+
+# Pipeline execution settings
+execution:
+  dry_run: false
+  resume: false
+  skip_completed: true  # Skip steps that are already done
+  log_level: "INFO"     # DEBUG, INFO, WARNING, ERROR
+  max_retries: 0        # Number of retries for failed steps
