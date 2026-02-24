@@ -28,3 +28,6 @@ seaborn>=0.11
 
 # CLI
 click>=8.0
+
+# SSL certificates (macOS fix)
+certifi

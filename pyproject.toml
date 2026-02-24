@@ -33,6 +33,7 @@ dependencies = [
     "matplotlib>=3.4",
     "seaborn>=0.11",
     "leidenalg>=0.8",
+    "certifi",
 ]
 
 [project.optional-dependencies]
@@ -41,7 +42,7 @@ via = ["pyVIA>=0.1"]
 ai = ["openai>=1.0.0"]
 export = ["loompy>=3.0"]
 all = ["rpy2>=3.5", "pyVIA>=0.1", "openai>=1.0.0", "loompy>=3.0"]
-dev = ["pytest>=7.0", "ruff>=0.4"]
+dev = ["pytest>=7.0", "ruff>=0.4", "ipywidgets>=8.0", "ipykernel>=6.0"]
 
 [project.scripts]
 scrn_ai = "scrn_ai.cli:main"
