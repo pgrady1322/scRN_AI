@@ -10,11 +10,15 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: GNU General Public License v3.0 - See LICENSE
 """
 
+import logging
+
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Optional, Union
 import scanpy as sc
 from anndata import AnnData
+
+logger = logging.getLogger(__name__)
 
 
 def identify_variable_genes(
@@ -277,14 +281,14 @@ def validate_marker_genes(
             valid_genes = [g for g in genes if g in available_genes]
             if len(valid_genes) < len(genes):
                 missing = set(genes) - set(valid_genes)
-                print(f"Warning: Cluster {cluster_id} - {len(missing)} marker genes not found in dataset")
+                logger.warning("Cluster %s — %d marker genes not found in dataset", cluster_id, len(missing))
             validated[cluster_id] = valid_genes
         return validated
     else:
         valid_genes = [g for g in marker_genes if g in available_genes]
         if len(valid_genes) < len(marker_genes):
             missing = set(marker_genes) - set(valid_genes)
-            print(f"Warning: {len(missing)} marker genes not found in dataset")
+            logger.warning("%d marker genes not found in dataset", len(missing))
         return valid_genes
 
 

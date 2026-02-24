@@ -10,10 +10,14 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: GNU General Public License v3.0 - See LICENSE
 """
 
+import logging
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def run(input_file, output_file, method="seurat", algorithm="LogNormalize", scale_factor=10000):
@@ -35,10 +39,10 @@ def run(input_file, output_file, method="seurat", algorithm="LogNormalize", scal
     scale_factor : float
         Scaling factor for normalization (default: 10000)
     """
-    print(f"[normalize] Loading data from {input_file}")
+    logger.info("Loading data from %s", input_file)
     adata = ad.read_h5ad(input_file)
     
-    print(f"[normalize] Method: {method}, Algorithm: {algorithm}")
+    logger.info("Method: %s, Algorithm: %s", method, algorithm)
     
     method = method.lower()
     algorithm_lower = algorithm.lower()
@@ -58,14 +62,14 @@ def run(input_file, output_file, method="seurat", algorithm="LogNormalize", scal
         raise ValueError(f"Unknown normalization method: {method}")
     
     # Save normalized data
-    print(f"[normalize] Saving to {output_file}")
+    logger.info("Saving to %s", output_file)
     _save(adata, output_file)
-    print("[normalize] Complete!")
+    logger.info("Normalization complete")
 
 
 def _normalize_seurat(adata, algorithm, scale_factor):
     """Normalize using Seurat methods (via R)."""
-    print(f"[normalize] Running Seurat {algorithm} normalization...")
+    logger.info("Running Seurat %s normalization...", algorithm)
     
     try:
         import rpy2.robjects as ro
@@ -98,7 +102,7 @@ def _normalize_seurat(adata, algorithm, scale_factor):
         adata.X = normalized
         
     except ImportError:
-        print("[normalize] Warning: rpy2 not available, falling back to scanpy methods")
+        logger.warning("rpy2 not available, falling back to scanpy methods")
         if algorithm == "lognormalize":
             _normalize_log1p(adata, scale_factor)
         elif algorithm == "sctransform":
@@ -107,7 +111,7 @@ def _normalize_seurat(adata, algorithm, scale_factor):
 
 def _normalize_jmp(adata, algorithm):
     """Normalize using JMP/edgeR methods (TMM, RLE, UpperQuartile)."""
-    print(f"[normalize] Running JMP {algorithm} normalization...")
+    logger.info("Running JMP %s normalization...", algorithm)
     
     try:
         import rpy2.robjects as ro
@@ -139,20 +143,20 @@ def _normalize_jmp(adata, algorithm):
         adata.X = normalized
         
     except ImportError:
-        print("[normalize] Warning: rpy2/edgeR not available, falling back to log1p")
+        logger.warning("rpy2/edgeR not available, falling back to log1p")
         _normalize_log1p(adata, 1e6)
 
 
 def _normalize_log1p(adata, scale_factor):
     """Simple log(x+1) normalization."""
-    print(f"[normalize] Running log1p normalization (scale_factor={scale_factor})...")
+    logger.info("Running log1p normalization (scale_factor=%s)...", scale_factor)
     sc.pp.normalize_total(adata, target_sum=scale_factor)
     sc.pp.log1p(adata)
 
 
 def _normalize_scran(adata):
     """Deconvolution-based normalization using scran."""
-    print("[normalize] Running scran normalization...")
+    logger.info("Running scran normalization...")
     
     try:
         import rpy2.robjects as ro
@@ -174,13 +178,13 @@ def _normalize_scran(adata):
         adata.X = normalized
         
     except ImportError:
-        print("[normalize] Warning: rpy2/scran not available, falling back to log1p")
+        logger.warning("rpy2/scran not available, falling back to log1p")
         _normalize_log1p(adata, 1e4)
 
 
 def _normalize_sctransform(adata):
     """Variance-stabilizing transformation."""
-    print("[normalize] Running sctransform normalization...")
+    logger.info("Running sctransform normalization...")
     
     try:
         import rpy2.robjects as ro
@@ -199,7 +203,7 @@ def _normalize_sctransform(adata):
         adata.X = normalized
         
     except ImportError:
-        print("[normalize] Warning: rpy2/sctransform not available, using scanpy approximation")
+        logger.warning("rpy2/sctransform not available, using scanpy approximation")
         # Use Scanpy's regress_out as approximation
         sc.pp.normalize_total(adata, target_sum=1e4)
         sc.pp.log1p(adata)

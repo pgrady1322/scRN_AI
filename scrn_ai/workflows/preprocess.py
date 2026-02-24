@@ -10,10 +10,14 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: GNU General Public License v3.0 - See LICENSE
 """
 
+import logging
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def run(input_file, output_file, min_genes=200, min_cells=3, max_genes=None, max_mito_pct=None):
@@ -35,45 +39,45 @@ def run(input_file, output_file, min_genes=200, min_cells=3, max_genes=None, max
     max_mito_pct : float, optional
         Maximum mitochondrial percentage (e.g., 20.0 for 20%)
     """
-    print(f"[preprocess] Loading data from {input_file}")
+    logger.info("Loading data from %s", input_file)
     adata = _read_any(input_file)
     
     n_cells_start = adata.n_obs
     n_genes_start = adata.n_vars
     
-    print(f"[preprocess] Initial data: {n_cells_start} cells × {n_genes_start} genes")
+    logger.info("Initial data: %d cells × %d genes", n_cells_start, n_genes_start)
     
     # Calculate QC metrics
-    print("[preprocess] Calculating QC metrics...")
+    logger.info("Calculating QC metrics...")
     adata.var['mt'] = adata.var_names.str.startswith('MT-')  # mitochondrial genes
     sc.pp.calculate_qc_metrics(adata, qc_vars=['mt'], percent_top=None, log1p=False, inplace=True)
     
     # Filter cells by gene count
-    print(f"[preprocess] Filtering cells: min_genes={min_genes}, max_genes={max_genes}")
+    logger.info("Filtering cells: min_genes=%d, max_genes=%s", min_genes, max_genes)
     sc.pp.filter_cells(adata, min_genes=min_genes)
     if max_genes is not None:
         adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
     
     # Filter cells by mitochondrial content
     if max_mito_pct is not None:
-        print(f"[preprocess] Filtering cells: max_mito_pct={max_mito_pct}%")
+        logger.info("Filtering cells: max_mito_pct=%.1f%%", max_mito_pct)
         adata = adata[adata.obs.pct_counts_mt < max_mito_pct, :]
     
     # Filter genes by cell count
-    print(f"[preprocess] Filtering genes: min_cells={min_cells}")
+    logger.info("Filtering genes: min_cells=%d", min_cells)
     sc.pp.filter_genes(adata, min_cells=min_cells)
     
     n_cells_end = adata.n_obs
     n_genes_end = adata.n_vars
     
-    print(f"[preprocess] Final data: {n_cells_end} cells × {n_genes_end} genes")
-    print(f"[preprocess] Removed {n_cells_start - n_cells_end} cells ({100*(n_cells_start - n_cells_end)/n_cells_start:.1f}%)")
-    print(f"[preprocess] Removed {n_genes_start - n_genes_end} genes ({100*(n_genes_start - n_genes_end)/n_genes_start:.1f}%)")
+    logger.info("Final data: %d cells × %d genes", n_cells_end, n_genes_end)
+    logger.info("Removed %d cells (%.1f%%)", n_cells_start - n_cells_end, 100*(n_cells_start - n_cells_end)/n_cells_start)
+    logger.info("Removed %d genes (%.1f%%)", n_genes_start - n_genes_end, 100*(n_genes_start - n_genes_end)/n_genes_start)
     
     # Save preprocessed data
-    print(f"[preprocess] Saving to {output_file}")
+    logger.info("Saving to %s", output_file)
     _save(adata, output_file)
-    print("[preprocess] Complete!")
+    logger.info("Preprocessing complete")
 
 
 def _read_any(path):

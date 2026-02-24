@@ -10,10 +10,14 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: GNU General Public License v3.0 - See LICENSE
 """
 
+import logging
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
 import matplotlib.pyplot as plt
+
+logger = logging.getLogger(__name__)
 
 
 def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dist=0.1, cell_types=None):
@@ -35,12 +39,12 @@ def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dis
     cell_types : str, optional
         Path to CSV file with cell type annotations
     """
-    print(f"[umap] Loading data from {input_file}")
+    logger.info("Loading data from %s", input_file)
     adata = ad.read_h5ad(input_file)
     
     # Load cell types if provided
     if cell_types is not None:
-        print(f"[umap] Loading cell type annotations from {cell_types}")
+        logger.info("Loading cell type annotations from %s", cell_types)
         import pandas as pd
         ct_df = pd.read_csv(cell_types, index_col=0)
         # Merge cell types into adata.obs
@@ -53,35 +57,35 @@ def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dis
     
     # Compute neighbors if not already done
     if 'neighbors' not in adata.uns:
-        print("[umap] Computing PCA...")
+        logger.info("Computing PCA...")
         if 'X_pca' not in adata.obsm:
             sc.pp.pca(adata, n_comps=50)
         
-        print(f"[umap] Computing neighbors (n_neighbors={n_neighbors})...")
+        logger.info("Computing neighbors (n_neighbors=%d)...", n_neighbors)
         sc.pp.neighbors(adata, n_neighbors=n_neighbors)
     
     # Compute UMAP if not already done
     if 'X_umap' not in adata.obsm:
-        print(f"[umap] Computing UMAP (min_dist={min_dist})...")
+        logger.info("Computing UMAP (min_dist=%.2f)...", min_dist)
         sc.tl.umap(adata, min_dist=min_dist)
     
     # Compute leiden clustering if coloring by leiden and not present
     if color_by == 'leiden' and 'leiden' not in adata.obs:
-        print("[umap] Computing Leiden clustering...")
+        logger.info("Computing Leiden clustering...")
         sc.tl.leiden(adata)
     
     # Generate plot
-    print(f"[umap] Generating plot colored by '{color_by}'...")
+    logger.info("Generating plot colored by '%s'...", color_by)
     fig = sc.pl.umap(adata, color=color_by, show=False, return_fig=True)
     
     # Save figure
     output_path = p.Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"[umap] Saving to {output_file}")
+    logger.info("Saving to %s", output_file)
     fig.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close(fig)
     
-    print("[umap] Complete!")
+    logger.info("UMAP visualization complete")
 
 # scRN_AI v0.1.0
 # Any usage is subject to this software's license.

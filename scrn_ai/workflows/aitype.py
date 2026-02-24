@@ -10,6 +10,7 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: GNU General Public License v3.0 - See LICENSE
 """
 
+import logging
 import os
 from pathlib import Path
 from typing import Optional, List, Dict
@@ -23,6 +24,8 @@ from ..utils.marker_detection import (
     validate_marker_genes,
     get_marker_expression_summary
 )
+
+logger = logging.getLogger(__name__)
 
 
 def run(
@@ -69,36 +72,36 @@ def run(
     api_key : str, optional
         OpenAI API key (if not in environment).
     """
-    print("=" * 60)
-    print("AI-Powered Cell Type Identification (AItyping)")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("AI-Powered Cell Type Identification (AItyping)")
+    logger.info("=" * 60)
     
     # Create output directory
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
     # Load data
-    print(f"\nLoading data from: {input_path}")
+    logger.info("Loading data from: %s", input_path)
     adata = sc.read_h5ad(input_path)
-    print(f"  Loaded {adata.n_obs} cells x {adata.n_vars} genes")
+    logger.info("Loaded %d cells x %d genes", adata.n_obs, adata.n_vars)
     
     # Check for clustering
     if cluster_key not in adata.obs.columns:
-        print(f"\nWarning: No '{cluster_key}' clustering found. Running Leiden clustering...")
+        logger.warning("No '%s' clustering found. Running Leiden clustering...", cluster_key)
         # Compute neighbors if not present
         if 'neighbors' not in adata.uns:
-            print("  Computing neighbors...")
+            logger.info("Computing neighbors...")
             sc.pp.neighbors(adata, n_neighbors=15)
         # Run clustering
-        print("  Running Leiden clustering...")
+        logger.info("Running Leiden clustering...")
         sc.tl.leiden(adata, key_added=cluster_key)
     
     n_clusters = adata.obs[cluster_key].nunique()
-    print(f"\nFound {n_clusters} clusters in '{cluster_key}'")
+    logger.info("Found %d clusters in '%s'", n_clusters, cluster_key)
     
     if n_clusters > max_clusters:
-        print(f"Warning: {n_clusters} clusters exceeds max_clusters={max_clusters}")
-        print(f"  Only processing first {max_clusters} clusters")
+        logger.warning("%d clusters exceeds max_clusters=%d", n_clusters, max_clusters)
+        logger.info("Only processing first %d clusters", max_clusters)
         # Get top N clusters by size
         cluster_sizes = adata.obs[cluster_key].value_counts()
         clusters_to_process = cluster_sizes.head(max_clusters).index.tolist()
@@ -106,9 +109,9 @@ def run(
         clusters_to_process = adata.obs[cluster_key].unique().tolist()
     
     # Get marker genes
-    print(f"\nIdentifying marker genes...")
+    logger.info("Identifying marker genes...")
     if marker_genes:
-        print(f"  Loading custom markers from: {marker_genes}")
+        logger.info("Loading custom markers from: %s", marker_genes)
         custom_markers = pd.read_csv(marker_genes)
         # Expect format: cluster,gene1,gene2,gene3,...
         cluster_markers = {}
@@ -117,7 +120,7 @@ def run(
             genes = [g for g in row[1:] if pd.notna(g)]
             cluster_markers[cluster_id] = genes[:n_markers]
     else:
-        print(f"  Auto-detecting top {n_markers} markers per cluster...")
+        logger.info("Auto-detecting top %d markers per cluster...", n_markers)
         cluster_markers = get_top_markers_per_cluster(
             adata,
             cluster_key=cluster_key,
@@ -135,14 +138,14 @@ def run(
     cluster_markers = validate_marker_genes(cluster_markers, adata)
     
     # Print marker summary
-    print(f"\n  Marker genes identified for {len(cluster_markers)} clusters:")
+    logger.info("Marker genes identified for %d clusters:", len(cluster_markers))
     for cluster_id, markers in sorted(cluster_markers.items())[:5]:
-        print(f"    Cluster {cluster_id}: {', '.join(markers[:5])}...")
+        logger.info("  Cluster %s: %s...", cluster_id, ', '.join(markers[:5]))
     if len(cluster_markers) > 5:
-        print(f"    ... and {len(cluster_markers) - 5} more clusters")
+        logger.info("  ... and %d more clusters", len(cluster_markers) - 5)
     
     # Initialize OpenAI client
-    print(f"\nInitializing OpenAI client (model: {model})...")
+    logger.info("Initializing OpenAI client (model: %s)...", model)
     try:
         client = OpenAIClient(
             api_key=api_key,
@@ -150,15 +153,13 @@ def run(
             temperature=0.3
         )
     except Exception as e:
-        print(f"Error: Failed to initialize OpenAI client: {e}")
-        print("\nPlease ensure:")
-        print("  1. openai package is installed: pip install openai")
-        print("  2. OPENAI_API_KEY environment variable is set")
+        logger.error("Failed to initialize OpenAI client: %s", e)
+        logger.error("Ensure: (1) openai is installed, (2) OPENAI_API_KEY is set")
         raise
     
     # Run predictions
-    print(f"\nRunning cell type predictions...")
-    print(f"  This will make {len(cluster_markers)} API calls (rate limited)...")
+    logger.info("Running cell type predictions...")
+    logger.info("Making %d API calls (rate limited)...", len(cluster_markers))
     
     context_info = f"Timing: {timing}"
     if tissue:
@@ -172,7 +173,7 @@ def run(
     )
     
     # Filter by confidence
-    print(f"\nFiltering predictions by confidence threshold: {confidence_threshold}")
+    logger.info("Filtering predictions by confidence threshold: %.2f", confidence_threshold)
     high_confidence = {
         cid: pred for cid, pred in predictions.items()
         if pred.confidence >= confidence_threshold
@@ -182,8 +183,8 @@ def run(
         if pred.confidence < confidence_threshold
     }
     
-    print(f"  High confidence: {len(high_confidence)} clusters")
-    print(f"  Low confidence: {len(low_confidence)} clusters")
+    logger.info("High confidence: %d clusters", len(high_confidence))
+    logger.info("Low confidence: %d clusters", len(low_confidence))
     
     # Save results
     _save_results(
@@ -197,14 +198,11 @@ def run(
         cluster_key=cluster_key
     )
     
-    print(f"\n✅ AItyping complete! Results saved to: {output_dir}")
-    print("\nOutput files:")
-    print(f"  - {timing}_annotations.csv: Cell type predictions")
-    print(f"  - {timing}_confidence_scores.csv: Confidence metrics")
-    print(f"  - {timing}_marker_genes.csv: Marker genes used")
-    print(f"  - {timing}_reasoning.txt: AI reasoning for each cluster")
+    logger.info("AItyping complete! Results saved to: %s", output_dir)
+    logger.info("Output: %s_annotations.csv, %s_confidence_scores.csv, %s_marker_genes.csv, %s_reasoning.txt",
+                timing, timing, timing, timing)
     if low_confidence:
-        print(f"  - {timing}_low_confidence.csv: Clusters needing review")
+        logger.info("Low confidence clusters written to: %s_low_confidence.csv", timing)
 
 
 def _save_results(
@@ -316,7 +314,7 @@ def _save_results(
     # Save updated AnnData
     output_h5ad = output_dir / f"{timing}_annotated.h5ad"
     adata.write_h5ad(output_h5ad)
-    print(f"  - {timing}_annotated.h5ad: Updated AnnData with cell type annotations")
+    logger.info("%s_annotated.h5ad: Updated AnnData with cell type annotations", timing)
 
 # scRN_AI v0.1.0
 # Any usage is subject to this software's license.

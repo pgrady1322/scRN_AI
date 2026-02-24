@@ -13,15 +13,18 @@ License: GNU General Public License v3.0 - See LICENSE
 import os
 import time
 import json
+import logging
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
 
 try:
     from openai import OpenAI
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
-    print("Warning: openai package not installed. Install with: pip install openai")
+    logger.warning("openai package not installed. Install with: pip install openai")
 
 
 @dataclass
@@ -243,15 +246,15 @@ Respond ONLY with valid JSON, no additional text."""
                 return prediction
                 
             except json.JSONDecodeError as e:
-                print(f"Warning: Failed to parse JSON response (attempt {attempt + 1}/{self.max_retries})")
-                print(f"Response was: {content[:200]}...")
+                logger.warning("Failed to parse JSON response (attempt %d/%d)", attempt + 1, self.max_retries)
+                logger.debug("Response was: %s...", content[:200])
                 if attempt < self.max_retries - 1:
                     time.sleep(self.retry_delay)
                 else:
                     raise ValueError(f"Failed to get valid JSON response after {self.max_retries} attempts") from e
             
             except Exception as e:
-                print(f"Warning: API call failed (attempt {attempt + 1}/{self.max_retries}): {e}")
+                logger.warning("API call failed (attempt %d/%d): %s", attempt + 1, self.max_retries, e)
                 if attempt < self.max_retries - 1:
                     time.sleep(self.retry_delay)
                 else:
@@ -290,7 +293,7 @@ Respond ONLY with valid JSON, no additional text."""
         total = len(clusters)
         
         for idx, (cluster_id, marker_genes) in enumerate(clusters.items(), 1):
-            print(f"Processing cluster {cluster_id} ({idx}/{total})...")
+            logger.info("Processing cluster %s (%d/%d)...", cluster_id, idx, total)
             
             prediction = self.predict_cell_type(
                 marker_genes=marker_genes,
