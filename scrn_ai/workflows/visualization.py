@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 UMAP embedding generation and visualization.
 
@@ -87,5 +87,5 @@ def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dis
     
     logger.info("UMAP visualization complete")
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Unit tests for importability and core module behaviour.
 
@@ -28,7 +28,7 @@ class TestPackageMetadata:
 
     def test_version(self):
         import scrn_ai
-        assert scrn_ai.__version__ == "0.1.0"
+        assert scrn_ai.__version__ == "1.0.0"
 
     def test_author(self):
         import scrn_ai
@@ -184,5 +184,5 @@ class TestOpenAIClient:
         except ImportError:
             pytest.skip("openai package not installed")
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

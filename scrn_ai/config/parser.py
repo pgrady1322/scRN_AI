@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 YAML configuration parser with validation, CLI overrides, and env-var substitution.
 
@@ -372,5 +372,5 @@ class ConfigParser:
         """Pretty print configuration."""
         return yaml.dump(self.config, default_flow_style=False)
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

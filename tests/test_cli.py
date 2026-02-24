@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 CLI command tests — validates every Click command is accessible and
 prints help without errors.  Uses Click's CliRunner (no subprocess).
@@ -116,5 +116,5 @@ class TestPseudotimeOptions:
         result = runner.invoke(cli, ["pseudotime", "--help"])
         assert scale in result.output
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

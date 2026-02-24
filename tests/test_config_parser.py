@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Tests for YAML configuration parser.
 
@@ -183,5 +183,5 @@ if __name__ == '__main__':
     # Run tests
     pytest.main([__file__, '-v'])
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

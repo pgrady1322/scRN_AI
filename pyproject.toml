@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scrn_ai"
-version = "0.1.0"
+version = "1.0.0"
 description = "Single-cell RNA-seq analysis toolkit with AI-powered cell typing"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}

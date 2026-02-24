@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 In-place AnnData normalization (log1p, scran, sctransform, size-factor).
 
@@ -58,5 +58,5 @@ def run(infile, outfile, method):
 
     raise ValueError(f"Unknown method: {method}. Choose from: log1p, scran, sctransform, size_factor")
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Merge multiple AnnData files into one.
 
@@ -37,5 +37,5 @@ def run(infiles: Sequence[Union[str, Path]], outfile: Union[str, Path]) -> None:
     merged.write_h5ad(outfile)
     logger.info("Merged result: %d cells × %d genes → %s", merged.n_obs, merged.n_vars, outfile)
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

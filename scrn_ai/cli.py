@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Click CLI entrypoint — defines all user-facing commands.
 
@@ -248,5 +248,5 @@ def ad_export(infile, outdir, fmt):
 if __name__ == "__main__":
     main()
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

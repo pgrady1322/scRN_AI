@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Small-scale pseudotime workflow (DPT, DTFLOW, BLTSA).
 
@@ -90,5 +90,5 @@ def _save(adata, out):
     else:
         adata.obs[["pseudotime"]].to_csv(out, sep="\t")
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

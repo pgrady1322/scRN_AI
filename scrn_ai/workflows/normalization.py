@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Multi-method normalization workflow (Seurat, JMP, basic).
 
@@ -216,5 +216,5 @@ def _save(adata, output_file):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(output_path)
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

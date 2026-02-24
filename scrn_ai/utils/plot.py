@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Visualization utilities — QC, expression, pseudotime, and UMAP plots.
 
@@ -246,5 +246,5 @@ def _save_fig(fig: plt.Figure, path: str) -> None:
     fig.savefig(out, dpi=300, bbox_inches="tight")
     logger.info("Figure saved to %s", out)
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

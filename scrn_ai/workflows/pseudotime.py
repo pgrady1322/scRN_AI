@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Unified pseudotime trajectory analysis (DPT, diffusion, BLTSA, VIA).
 
@@ -187,5 +187,5 @@ def _save(adata, output_file):
         adata.obs[['pseudotime']].to_csv(output_path / "pseudotime.csv")
         logger.info("Results saved to directory: %s", output_path)
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

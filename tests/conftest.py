@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Shared pytest fixtures.
 
@@ -42,5 +42,5 @@ def sample_config(tmp_path):
     path.write_text(yaml.dump(cfg))
     return str(path)
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

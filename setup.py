@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Package installation and dependency configuration.
 
@@ -14,7 +14,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="scrn_ai",
-    version="0.1.0",
+    version="1.0.0",
     description="Single-cell RNA-seq analysis toolkit with AI-powered cell typing",
     author="Patrick Grady",
     author_email="",
@@ -55,5 +55,5 @@ setup(
     ],
 )
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.

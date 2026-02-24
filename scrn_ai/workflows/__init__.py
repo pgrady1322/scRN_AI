@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-scRN_AI v0.1.0
+scRN_AI v1.0.0
 
 Workflow subpackage — high-level pipeline modules.
 
@@ -12,5 +12,5 @@ License: GNU General Public License v3.0 - See LICENSE
 
 
 
-# scRN_AI v0.1.0
+# scRN_AI v1.0.0
 # Any usage is subject to this software's license.
