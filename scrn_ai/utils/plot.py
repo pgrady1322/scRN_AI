@@ -7,7 +7,7 @@ Visualization utilities — QC, expression, pseudotime, and UMAP plots.
 
 Author: Patrick Grady
 Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
-License: GNU General Public License v3.0 - See LICENSE
+License: MIT License - See LICENSE
 """
 
 import logging

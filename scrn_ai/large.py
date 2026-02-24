@@ -7,7 +7,7 @@ Large-scale trajectory workflow using STAVIA (VIA 2.0).
 
 Author: Patrick Grady
 Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
-License: GNU General Public License v3.0 - See LICENSE
+License: MIT License - See LICENSE
 """
 
 import logging

@@ -7,7 +7,7 @@ Click CLI entrypoint — defines all user-facing commands.
 
 Author: Patrick Grady
 Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
-License: GNU General Public License v3.0 - See LICENSE
+License: MIT License - See LICENSE
 """
 
 import click
