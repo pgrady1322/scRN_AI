@@ -3,6 +3,12 @@
 This repository provides a modular, containerized workflow for **single-cell RNA sequencing (scRNA-seq) data analysis**, supporting both **dense and sparse matrix inputs**.  
 While **PIPSeeker** is the default preprocessing module, the workflow is compatible with any equivalent tool that outputs a valid **matrix format** (e.g. `.mtx`, `.h5ad`, `.loom`, `.csv`).
 
+## Try It Now
+
+> **[PBMC 3k Pipeline Demo Notebook](examples/pbmc3k_pipeline_demo.ipynb)** — full end-to-end walkthrough on real PBMC data.  
+> QC → normalization → HVG selection → clustering → marker detection → annotation → pseudotime.  
+> Uses scRN_AI's workflow modules and utility functions throughout.
+
 ---
 
 ## Quick Start Diagram (Mermaid)
