@@ -1,0 +1,123 @@
+# Configuration Schema for Validation
+# Defines required and optional fields, types, and constraints
+
+# Required fields (must be present in config.yaml)
+required:
+  - input.matrix_path
+  - output.results_dir
+
+# Field type definitions
+types:
+  input:
+    matrix_path: string
+    metadata_path: [string, null]
+    input_format: string
+    
+  preprocessing:
+    min_genes_per_cell: integer
+    min_cells_per_gene: integer
+    max_genes_per_cell: [integer, null]
+    max_mito_pct: [float, null]
+    
+  normalization:
+    method: string
+    algorithm: string
+    scale_factor: [integer, float]
+    
+  analysis:
+    run_umap: boolean
+    umap_n_neighbors: integer
+    umap_min_dist: float
+    color_by: string
+    run_pseudotime: boolean
+    pseudotime_method: string
+    pseudotime_scale: string
+    root_cell: [integer, null]
+    run_aitype: boolean
+    aitype_timing: string
+    aitype_model: string
+    aitype_confidence_threshold: float
+    aitype_species: string
+    aitype_tissue: [string, null]
+    aitype_n_markers: integer
+    
+  output:
+    results_dir: string
+    save_intermediate: boolean
+    checkpoint_dir: string
+    
+  execution:
+    dry_run: boolean
+    resume: boolean
+    skip_completed: boolean
+    log_level: string
+    max_retries: integer
+
+# Value constraints
+constraints:
+  normalization:
+    method:
+      enum: ["seurat", "jmp", "log1p", "scran", "sctransform"]
+    algorithm:
+      seurat: ["LogNormalize", "SCTransform"]
+      jmp: ["TMM", "RLE", "UpperQuartile"]
+      
+  analysis:
+    pseudotime_method:
+      enum: ["dpt", "diffusion", "bltsa", "via"]
+    pseudotime_scale:
+      enum: ["small", "large"]
+    aitype_timing:
+      enum: ["pre_analysis", "post_analysis", "both"]
+    aitype_model:
+      enum: ["gpt-4", "gpt-4-turbo", "gpt-3.5-turbo"]
+    aitype_confidence_threshold:
+      min: 0.0
+      max: 1.0
+    color_by:
+      common: ["leiden", "louvain", "cell_type", "cluster"]
+      
+  execution:
+    log_level:
+      enum: ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    max_retries:
+      min: 0
+      max: 10
+
+# File path validation
+paths:
+  input:
+    matrix_path:
+      must_exist: true
+      extensions: [".h5ad", ".mtx", ".loom", ".csv"]
+    metadata_path:
+      must_exist: false
+      extensions: [".csv", ".tsv", ".txt"]
+      
+  output:
+    results_dir:
+      must_exist: false
+      create_if_missing: true
+    checkpoint_dir:
+      must_exist: false
+      create_if_missing: true
+
+# Dependencies between fields
+dependencies:
+  # If run_aitype is true, must have OPENAI_API_KEY env var
+  - if: "analysis.run_aitype == true"
+    then:
+      requires_env: ["OPENAI_API_KEY"]
+      
+  # If aitype_timing is post_analysis, must run pseudotime first
+  - if: "analysis.aitype_timing in ['post_analysis', 'both']"
+    then:
+      requires: ["analysis.run_pseudotime == true"]
+      
+  # If normalization method is seurat or jmp, need valid algorithm
+  - if: "normalization.method == 'seurat'"
+    then:
+      requires: ["normalization.algorithm in ['LogNormalize', 'SCTransform']"]
+  - if: "normalization.method == 'jmp'"
+    then:
+      requires: ["normalization.algorithm in ['TMM', 'RLE', 'UpperQuartile']"]

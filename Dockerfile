@@ -1,10 +1,10 @@
 ########################################
 #  Single-Cell Toolkit ─ Dockerfile
-#  Build:  docker build -t sc_toolkit:0.1 .
+#  Build:  docker build -t scrn_ai:0.1 .
 ########################################
 # ----------  Stage 1  base OS ----------
 FROM ubuntu:24.04 AS base
-LABEL maintainer="you@example.com"
+LABEL maintainer="Patrick Grady"
 
 # Basic build & runtime utilities
 RUN apt-get update && \
@@ -29,11 +29,11 @@ RUN curl -L https://micro.mamba.pm/api/micromamba/linux-64/${MAMBA_VER} \
 
 # Copy conda environment spec and create env
 COPY env.yml /tmp/env.yml
-RUN micromamba create -y -n sc_toolkit --file /tmp/env.yml && \
+RUN micromamba create -y -n scrn_ai --file /tmp/env.yml && \
     micromamba clean -a -y
 # Activate by default
-ENV CONDA_DEFAULT_ENV=sc_toolkit
-ENV PATH=${MAMBA_ROOT}/envs/sc_toolkit/bin:$PATH
+ENV CONDA_DEFAULT_ENV=scrn_ai
+ENV PATH=${MAMBA_ROOT}/envs/scrn_ai/bin:$PATH
 
 # ----------  BLTSA (R) ----------
 RUN Rscript -e "options(repos='https://cloud.r-project.org'); install.packages(c('Matrix','FNN','RSpectra','igraph'))" \
@@ -42,16 +42,14 @@ RUN Rscript -e "options(repos='https://cloud.r-project.org'); install.packages(c
     && git clone --depth 1 https://github.com/LiminLi-xjtu/BLTSA.git /opt/BLTSA
 
 # ----------  Stage 3  workflows & CLI ----------
-WORKDIR /opt/sc_toolkit
+WORKDIR /opt/scrn_ai
 
-# Copy the source tree
-COPY sc_toolkit/ ./sc_toolkit/
+# Copy the source tree and setup files
+COPY scrn_ai/ ./scrn_ai/
+COPY setup.py ./setup.py
 
-# Make it importable without installing
-ENV PYTHONPATH=/opt/sc_toolkit:$PYTHONPATH
+# Install the package (creates the scrn_ai command)
+RUN pip install --no-cache-dir -e .
 
-# RUN pip install --no-cache-dir -e ./sc_toolkit
-
-
-ENTRYPOINT ["sc_toolkit"]     # main CLI defined below
+ENTRYPOINT ["scrn_ai"]     # main CLI defined below
 CMD ["--help"]                # tells users what to do if they just run the image
