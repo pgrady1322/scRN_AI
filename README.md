@@ -11,6 +11,42 @@ While **PIPSeeker** is the default preprocessing module, the workflow is compati
 
 ---
 
+## Installation
+
+### Option 1: pip (Python-only, recommended for quick start)
+
+```bash
+git clone https://github.com/pgrady1322/scRN_AI.git
+cd scRN_AI
+python -m venv .venv && source .venv/bin/activate
+pip install -e .            # core deps only
+# or
+pip install -e ".[dev]"     # + pytest, ruff, ipykernel
+# or
+pip install -e ".[all]"     # + openai, loompy, rpy2, pyVIA
+```
+
+### Option 2: conda (full install with R integration)
+
+```bash
+conda env create -f env.yml
+conda activate scrn_ai
+pip install -e .
+```
+
+The conda env includes R, Seurat, edgeR, scran, and sctransform for
+normalization methods that require R.
+
+### Option 3: pip from requirements files
+
+```bash
+pip install -r requirements.txt          # core deps
+pip install -r requirements-dev.txt      # + dev/optional deps
+pip install -e .
+```
+
+---
+
 ## Quick Start Diagram (Mermaid)
 
 ```mermaid

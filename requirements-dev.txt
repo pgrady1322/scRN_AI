@@ -1,0 +1,30 @@
+# ═══════════════════════════════════════════════════════════════════════
+# scRN_AI v1.0.0 — Development & optional dependencies
+#
+# Install:  pip install -r requirements-dev.txt
+# Or:       pip install -e ".[dev,all]"
+# ═══════════════════════════════════════════════════════════════════════
+
+-r requirements.txt
+
+# Testing
+pytest>=7.0
+
+# Linting / formatting
+ruff>=0.4
+
+# Notebook support
+ipykernel>=6.0
+
+# ── Optional features ────────────────────────────────────────────────
+# AI-powered cell typing (requires OpenAI API key)
+openai>=1.0.0
+
+# Export to loom format
+loompy>=3.0
+
+# Large-scale trajectory analysis (VIA / STAVIA)
+# pyVIA>=0.1
+
+# R integration (Seurat, edgeR, scran) — install via conda instead
+# rpy2>=3.5

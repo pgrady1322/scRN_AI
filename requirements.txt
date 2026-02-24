@@ -1,0 +1,30 @@
+# ═══════════════════════════════════════════════════════════════════════
+# scRN_AI v1.0.0 — Core Python dependencies
+#
+# Install:  pip install -r requirements.txt
+# Or:       pip install -e .          (uses pyproject.toml directly)
+#
+# For optional features, see requirements-dev.txt or:
+#   pip install -e ".[all]"           (all optional deps)
+#   pip install -e ".[ai]"            (OpenAI integration)
+#   pip install -e ".[r]"             (R/Seurat/edgeR via rpy2)
+# ═══════════════════════════════════════════════════════════════════════
+
+# Core data stack
+numpy>=1.20
+scipy>=1.7
+pandas>=1.3
+scikit-learn>=1.0
+h5py>=3.0
+
+# Single-cell analysis
+scanpy>=1.9
+anndata>=0.8
+leidenalg>=0.8
+
+# Visualization
+matplotlib>=3.4
+seaborn>=0.11
+
+# CLI
+click>=8.0
