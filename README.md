@@ -117,39 +117,47 @@ docker run -it --rm -v $(pwd)/data:/data scrn_ai:0.1 --help
 ## Directory Structure
 
 ```
-project_root/
+scRN_AI/
 ├── Dockerfile                    # Unified container build
+├── pyproject.toml                # PEP 517/518 project metadata & tool config
+├── setup.py                      # Legacy setuptools shim (kept for editable installs)
 ├── env.yml                       # Conda environment specification
-├── config/
-│   └── config.yaml               # Workflow configuration
-├── input/
-│   ├── dataset.mtx               # Sparse matrix input (optional)
-│   ├── dataset.h5ad              # Dense matrix input (optional)
-│   └── metadata.csv              # Cell/barcode metadata
-├── output/
-│   ├── normalized/               # Normalized matrices (Seurat/JMP)
-│   ├── cell_types/               # AI cell type annotations (aitype)
-│   ├── processed/                # UMAP, clustering results
-│   ├── pseudotime/               # BLTSA, Diffusion PT results
-│   └── visualization/            # UMAP / PCA figures
-└── scrn_ai/                   # Python CLI source code
-    ├── cli.py                    # Main CLI entrypoint
-    ├── main.py                   # Workflow orchestration
-    ├── small.py                  # Small dataset workflows
-    ├── large.py                  # Large dataset workflows
-    ├── workflows/                # Analysis workflows
-    │   ├── preprocess.py         # QC filtering
-    │   ├── normalization.py      # Normalization methods
+├── LICENSE
+├── README.md
+├── examples/
+│   └── sample_config.yaml        # Example workflow configuration
+├── tests/
+│   ├── quick_test.py
+│   ├── test_config_parser.py
+│   ├── test_phase1.py
+│   ├── test_phase2.py
+│   └── test_phase3_milestone1.py
+└── scrn_ai/                      # Python package
+    ├── __init__.py               # Version & metadata
+    ├── cli.py                    # Click CLI — all user-facing commands
+    ├── main.py                   # Entrypoint (delegates to cli.main)
+    ├── small.py                  # Legacy small-scale workflow
+    ├── large.py                  # Legacy large-scale workflow
+    ├── config/
+    │   ├── __init__.py           # Exposes ConfigParser
+    │   ├── parser.py             # YAML config parsing + validation
+    │   ├── defaults.yaml         # Default config values
+    │   └── schema.yaml           # Validation schema
+    ├── workflows/
+    │   ├── __init__.py
+    │   ├── preprocess.py         # QC filtering (multi-format input)
+    │   ├── normalization.py      # Seurat / JMP / log1p / scran / sctransform
     │   ├── visualization.py      # UMAP/PCA plotting
-    │   ├── pseudotime.py         # Trajectory analysis
-    │   └── aitype.py             # AI cell type identification (NEW)
-    └── utils/                    # Utility modules
-        ├── openai_client.py      # OpenAI API wrapper (NEW)
-        ├── marker_detection.py   # Marker gene identification (NEW)
-        ├── normalization.py
-        ├── plot.py
-        ├── export.py
-        └── merge.py
+    │   ├── pseudotime.py         # DPT / diffusion / BLTSA / VIA
+    │   └── aitype.py             # AI cell typing via OpenAI GPT
+    └── utils/
+        ├── __init__.py
+        ├── openai_client.py      # OpenAI API wrapper with rate limiting
+        ├── marker_detection.py   # Cluster marker gene identification
+        ├── normalization.py      # Thin wrapper → delegates to workflows
+        ├── plot.py               # QC violins, dotplots, pseudotime heatmaps
+        ├── export.py             # AnnData → loom / mtx / csv
+        └── merge.py              # AnnData concatenation
 ```
 
 ---
