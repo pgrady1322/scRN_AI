@@ -1,3 +1,2 @@
 [console_scripts]
 scrn_ai = scrn_ai.cli:main
-
