@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -12,10 +11,10 @@ License: MIT License - See LICENSE
 
 import logging
 import os
-
-import scanpy as sc
-import anndata as ad
 import pathlib as p
+
+import anndata as ad
+import scanpy as sc
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +39,10 @@ def run(infile, species, method, run_bltsa, outfile):
         sc.tl.diffmap(adata)
         sc.tl.dpt(adata)
         adata.obs["pseudotime"] = adata.obs["dpt_pseudotime"]
-    else:         # dtflow
+    else:  # dtflow
         logger.info("Running DTFlow pseudotime")
         import dtflow
+
         adata.obs["pseudotime"] = dtflow.run(adata)
 
     if run_bltsa:
@@ -51,6 +51,7 @@ def run(infile, species, method, run_bltsa, outfile):
             import rpy2.robjects as ro
             from rpy2.robjects import pandas2ri
             from scipy import sparse
+
             pandas2ri.activate()
 
             ro.globalenv["expression_matrix"] = (
@@ -66,6 +67,7 @@ def run(infile, species, method, run_bltsa, outfile):
             ''')
 
             import numpy as np
+
             adata.obs["bltsa_pt"] = np.array(ro.r["pseudotime"])
         except Exception as exc:
             logger.warning("BLTSA failed (%s), skipping", exc)
@@ -74,14 +76,16 @@ def run(infile, species, method, run_bltsa, outfile):
     _save(adata, outfile)
     logger.info("Saved results to %s", outfile)
 
+
 def _read_any(path):
     path = p.Path(path)
     if path.suffix in {".h5ad"}:
         return ad.read_h5ad(path)
     elif path.suffix in {".h5"}:
         return sc.read_10x_h5(path)
-    else:     # assume 10x mtx directory
+    else:  # assume 10x mtx directory
         return sc.read_10x_mtx(path, gex_only=True)
+
 
 def _save(adata, out):
     out = p.Path(out)
@@ -89,6 +93,7 @@ def _save(adata, out):
         adata.write(out)
     else:
         adata.obs[["pseudotime"]].to_csv(out, sep="\t")
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

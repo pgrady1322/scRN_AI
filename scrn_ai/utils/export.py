@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -41,7 +40,8 @@ def run(infile: Union[str, Path], outdir: Union[str, Path], fmt: str) -> None:
         loom_path = outdir / "adata.loom"
         adata.write_loom(loom_path)
     elif fmt == "mtx":
-        from scipy import sparse, io
+        from scipy import io, sparse
+
         io.mmwrite(outdir / "matrix.mtx", sparse.csr_matrix(adata.X))
         adata.obs_names.to_series().to_csv(outdir / "barcodes.tsv", index=False, header=False)
         adata.var_names.to_series().to_csv(outdir / "features.tsv", index=False, header=False)
@@ -53,6 +53,7 @@ def run(infile: Union[str, Path], outdir: Union[str, Path], fmt: str) -> None:
         raise ValueError(f"Unsupported format '{fmt}'. Choose from: loom, mtx, csv")
 
     logger.info("Export complete → %s/", outdir)
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -11,6 +10,7 @@ License: MIT License - See LICENSE
 """
 
 from .cli import main
+
 if __name__ == "__main__":
     main()
 

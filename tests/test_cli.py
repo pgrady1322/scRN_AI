@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -13,8 +12,8 @@ License: MIT License - See LICENSE
 
 import pytest
 
-
 # ── Phase 1 commands ─────────────────────────────────────────────────────
+
 
 class TestPhase1CLI:
     """All Phase 1 workflow + utility commands respond to --help."""
@@ -46,6 +45,7 @@ class TestPhase1CLI:
 
 # ── Phase 2 commands ─────────────────────────────────────────────────────
 
+
 class TestPhase2CLI:
     """AI-typing command is registered and advertises the right options."""
 
@@ -75,6 +75,7 @@ class TestPhase2CLI:
 
 # ── Preprocess options ───────────────────────────────────────────────────
 
+
 class TestPreprocessOptions:
     """Preprocess command exposes expected QC flags."""
 
@@ -88,6 +89,7 @@ class TestPreprocessOptions:
 
 
 # ── Normalize options ────────────────────────────────────────────────────
+
 
 class TestNormalizeOptions:
     """Normalize command lists all supported methods."""
@@ -103,6 +105,7 @@ class TestNormalizeOptions:
 
 # ── Pseudotime options ───────────────────────────────────────────────────
 
+
 class TestPseudotimeOptions:
     """Pseudotime command lists all analysis methods and scales."""
 
@@ -115,6 +118,7 @@ class TestPseudotimeOptions:
     def test_pseudotime_scales(self, runner, cli, scale):
         result = runner.invoke(cli, ["pseudotime", "--help"])
         assert scale in result.output
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

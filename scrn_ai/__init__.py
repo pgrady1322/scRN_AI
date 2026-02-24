@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -14,9 +13,7 @@ __version__ = "1.0.0"
 __author__ = "Patrick Grady"
 __email__ = ""
 
-from . import cli
-from . import utils
-from . import workflows
+from . import cli, utils, workflows
 
 __all__ = ["cli", "utils", "workflows"]
 

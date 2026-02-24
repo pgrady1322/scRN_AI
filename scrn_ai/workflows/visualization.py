@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -11,19 +10,21 @@ License: MIT License - See LICENSE
 """
 
 import logging
-
-import scanpy as sc
-import anndata as ad
 import pathlib as p
+
+import anndata as ad
 import matplotlib.pyplot as plt
+import scanpy as sc
 
 logger = logging.getLogger(__name__)
 
 
-def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dist=0.1, cell_types=None):
+def run_umap(
+    input_file, output_file, color_by="leiden", n_neighbors=15, min_dist=0.1, cell_types=None
+):
     """
     Generate UMAP visualization for dimensional reduction.
-    
+
     Parameters
     ----------
     input_file : str
@@ -41,51 +42,53 @@ def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dis
     """
     logger.info("Loading data from %s", input_file)
     adata = ad.read_h5ad(input_file)
-    
+
     # Load cell types if provided
     if cell_types is not None:
         logger.info("Loading cell type annotations from %s", cell_types)
         import pandas as pd
+
         ct_df = pd.read_csv(cell_types, index_col=0)
         # Merge cell types into adata.obs
-        if 'cell_type' in ct_df.columns:
-            adata.obs['cell_type'] = ct_df['cell_type']
-            color_by = 'cell_type'
-        elif 'annotation' in ct_df.columns:
-            adata.obs['cell_type'] = ct_df['annotation']
-            color_by = 'cell_type'
-    
+        if "cell_type" in ct_df.columns:
+            adata.obs["cell_type"] = ct_df["cell_type"]
+            color_by = "cell_type"
+        elif "annotation" in ct_df.columns:
+            adata.obs["cell_type"] = ct_df["annotation"]
+            color_by = "cell_type"
+
     # Compute neighbors if not already done
-    if 'neighbors' not in adata.uns:
+    if "neighbors" not in adata.uns:
         logger.info("Computing PCA...")
-        if 'X_pca' not in adata.obsm:
+        if "X_pca" not in adata.obsm:
             sc.pp.pca(adata, n_comps=50)
-        
+
         logger.info("Computing neighbors (n_neighbors=%d)...", n_neighbors)
         sc.pp.neighbors(adata, n_neighbors=n_neighbors)
-    
+
     # Compute UMAP if not already done
-    if 'X_umap' not in adata.obsm:
+    if "X_umap" not in adata.obsm:
         logger.info("Computing UMAP (min_dist=%.2f)...", min_dist)
         sc.tl.umap(adata, min_dist=min_dist)
-    
+
     # Compute leiden clustering if coloring by leiden and not present
-    if color_by == 'leiden' and 'leiden' not in adata.obs:
+    if color_by == "leiden" and "leiden" not in adata.obs:
         logger.info("Computing Leiden clustering...")
         sc.tl.leiden(adata)
-    
+
     # Generate plot
     logger.info("Generating plot colored by '%s'...", color_by)
     fig = sc.pl.umap(adata, color=color_by, show=False, return_fig=True)
-    
+
     # Save figure
     output_path = p.Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     logger.info("Saving to %s", output_file)
-    fig.savefig(output_path, dpi=300, bbox_inches='tight')
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
-    
+
     logger.info("UMAP visualization complete")
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

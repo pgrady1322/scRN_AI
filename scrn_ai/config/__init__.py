@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -12,7 +11,7 @@ License: MIT License - See LICENSE
 
 from .parser import ConfigParser
 
-__all__ = ['ConfigParser']
+__all__ = ["ConfigParser"]
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

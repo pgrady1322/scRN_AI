@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -11,8 +10,9 @@ License: MIT License - See LICENSE
 """
 
 import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence, Union
+from typing import Union
 
 import anndata as ad
 
@@ -36,6 +36,7 @@ def run(infiles: Sequence[Union[str, Path]], outfile: Union[str, Path]) -> None:
     Path(outfile).parent.mkdir(parents=True, exist_ok=True)
     merged.write_h5ad(outfile)
     logger.info("Merged result: %d cells × %d genes → %s", merged.n_obs, merged.n_vars, outfile)
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

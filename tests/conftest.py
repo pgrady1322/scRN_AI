@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -41,6 +40,7 @@ def sample_config(tmp_path):
     path = tmp_path / "config.yaml"
     path.write_text(yaml.dump(cfg))
     return str(path)
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

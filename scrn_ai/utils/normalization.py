@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -14,10 +13,10 @@ License: MIT License - See LICENSE
 """
 
 import logging
-
-import scanpy as sc
-import anndata as ad
 import pathlib as p
+
+import anndata as ad
+import scanpy as sc
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +55,10 @@ def run(infile, outfile, method):
         logger.info("Saved to %s", outfile)
         return
 
-    raise ValueError(f"Unknown method: {method}. Choose from: log1p, scran, sctransform, size_factor")
+    raise ValueError(
+        f"Unknown method: {method}. Choose from: log1p, scran, sctransform, size_factor"
+    )
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

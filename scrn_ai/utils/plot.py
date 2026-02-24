@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -11,8 +10,9 @@ License: MIT License - See LICENSE
 """
 
 import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Optional, Sequence, Union
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 # ── UMAP helpers ─────────────────────────────────────────────────────────
+
 
 def umap_pseudotime(
     adata: AnnData,
@@ -50,6 +51,7 @@ def umap_pseudotime(
 
 
 # ── QC plots ─────────────────────────────────────────────────────────────
+
 
 def qc_violin(
     adata: AnnData,
@@ -113,8 +115,12 @@ def qc_scatter(
         return
     fig, ax = plt.subplots(figsize=(6, 5))
     scatter = ax.scatter(
-        adata.obs[x], adata.obs[y],
-        c=adata.obs[color], cmap="RdYlGn_r", s=3, alpha=0.6,
+        adata.obs[x],
+        adata.obs[y],
+        c=adata.obs[color],
+        cmap="RdYlGn_r",
+        s=3,
+        alpha=0.6,
     )
     ax.set_xlabel(x)
     ax.set_ylabel(y)
@@ -127,9 +133,10 @@ def qc_scatter(
 
 # ── Gene expression plots ───────────────────────────────────────────────
 
+
 def dotplot(
     adata: AnnData,
-    genes: List[str],
+    genes: list[str],
     groupby: str = "leiden",
     save: Optional[str] = None,
 ) -> None:
@@ -154,7 +161,7 @@ def dotplot(
 
 def stacked_violin(
     adata: AnnData,
-    genes: List[str],
+    genes: list[str],
     groupby: str = "leiden",
     save: Optional[str] = None,
 ) -> None:
@@ -172,7 +179,11 @@ def stacked_violin(
         Path to save the figure.
     """
     fig = sc.pl.stacked_violin(
-        adata, var_names=genes, groupby=groupby, show=False, return_fig=True,
+        adata,
+        var_names=genes,
+        groupby=groupby,
+        show=False,
+        return_fig=True,
     )
     if save:
         fig.savefig(save, dpi=300, bbox_inches="tight")
@@ -181,9 +192,10 @@ def stacked_violin(
 
 # ── Pseudotime plots ────────────────────────────────────────────────────
 
+
 def pseudotime_heatmap(
     adata: AnnData,
-    genes: List[str],
+    genes: list[str],
     time_key: str = "pseudotime",
     n_bins: int = 50,
     save: Optional[str] = None,
@@ -219,6 +231,7 @@ def pseudotime_heatmap(
     bins = np.array_split(order, n_bins)
 
     from scipy import sparse
+
     X = adata[:, valid_genes].X
     if sparse.issparse(X):
         X = X.toarray()
@@ -239,12 +252,14 @@ def pseudotime_heatmap(
 
 # ── Internal helpers ─────────────────────────────────────────────────────
 
+
 def _save_fig(fig: plt.Figure, path: str) -> None:
     """Save a matplotlib figure, creating parent directories as needed."""
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=300, bbox_inches="tight")
     logger.info("Figure saved to %s", out)
+
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.

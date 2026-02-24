@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 scRN_AI v1.0.0
 
@@ -10,12 +9,7 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: MIT License - See LICENSE
 """
 
-from . import export
-from . import marker_detection
-from . import merge
-from . import normalization
-from . import openai_client
-from . import plot
+from . import export, marker_detection, merge, normalization, openai_client, plot
 
 __all__ = [
     "export",
