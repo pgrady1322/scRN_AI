@@ -80,7 +80,7 @@ def _read_any(path):
     if path.suffix == ".h5ad":
         return ad.read_h5ad(path)
     elif path.suffix == ".h5":
-        return ad.read_10x_h5(path)
+        return sc.read_10x_h5(path)
     elif path.suffix == ".loom":
         return ad.read_loom(path)
     elif path.suffix == ".csv":

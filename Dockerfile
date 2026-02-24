@@ -4,7 +4,7 @@
 ########################################
 # ----------  Stage 1  base OS ----------
 FROM ubuntu:24.04 AS base
-LABEL maintainer="you@example.com"
+LABEL maintainer="Patrick Grady"
 
 # Basic build & runtime utilities
 RUN apt-get update && \

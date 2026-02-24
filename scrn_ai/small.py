@@ -43,7 +43,7 @@ def _read_any(path):
     if path.suffix in {".h5ad"}:
         return ad.read_h5ad(path)
     elif path.suffix in {".h5"}:
-        return ad.read_10x_h5(path)
+        return sc.read_10x_h5(path)
     else:     # assume 10x mtx directory
         return sc.read_10x_mtx(path, gex_only=True)
 

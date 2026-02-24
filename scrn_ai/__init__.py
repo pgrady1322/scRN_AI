@@ -11,8 +11,8 @@ A comprehensive toolkit for single-cell RNA-seq data analysis including:
 """
 
 __version__ = "0.1.0"
-__author__ = "Your Name"
-__email__ = "you@example.com"
+__author__ = "Patrick Grady"
+__email__ = ""
 
 from . import cli
 from . import utils

@@ -225,13 +225,13 @@ def ad_merge(infiles, outfile):
 @main.command()
 @click.option("--infile", "-i", type=click.Path(exists=True), required=True)
 @click.option("--outdir", "-o", type=click.Path(), required=True)
-@click.option("--format", "-f",
+@click.option("--format", "-f", "fmt",
               type=click.Choice(["loom", "mtx", "csv"], case_sensitive=False),
               required=True)
-def ad_export(infile, outdir, format):
+def ad_export(infile, outdir, fmt):
     """Export AnnData to loom / mtx / csv."""
     from .utils import export
-    export.run(infile, outdir, format)
+    export.run(infile, outdir, fmt)
 
 if __name__ == "__main__":
     main()
