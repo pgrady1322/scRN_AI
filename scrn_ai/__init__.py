@@ -1,13 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-scrn_ai - Single-cell RNA-seq analysis toolkit
+scRN_AI v0.1.0
 
-A comprehensive toolkit for single-cell RNA-seq data analysis including:
-- Quality control and preprocessing
-- Multiple normalization methods (Seurat, JMP, basic)
-- Dimensionality reduction (PCA, UMAP)
-- Clustering and cell type annotation
-- Pseudotime trajectory analysis
-- AI-powered cell typing
+Package initialization and version metadata.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 __version__ = "0.1.0"
@@ -19,3 +19,6 @@ from . import utils
 from . import workflows
 
 __all__ = ["cli", "utils", "workflows"]
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

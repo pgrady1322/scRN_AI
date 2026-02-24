@@ -1,3 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+scRN_AI v0.1.0
+
+Click CLI entrypoint — defines all user-facing commands.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
+"""
+
 import click
 from importlib import import_module
 
@@ -235,3 +247,6 @@ def ad_export(infile, outdir, fmt):
 
 if __name__ == "__main__":
     main()
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

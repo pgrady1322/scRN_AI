@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Quick reference test for scrn_ai Phase 1 commands
-Tests all commands are accessible and have proper help text
+scRN_AI v0.1.0
+
+Quick smoke tests for core functionality.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import subprocess
@@ -81,3 +87,6 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

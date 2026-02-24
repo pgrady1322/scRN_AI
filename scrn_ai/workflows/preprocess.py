@@ -1,8 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Preprocessing workflow for scRNA-seq data.
+scRN_AI v0.1.0
 
-Handles QC filtering, multiple input formats, and basic quality control.
+QC preprocessing with multi-format input support.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
@@ -99,3 +106,6 @@ def _save(adata, output_file):
     output_path = p.Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(output_path)
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

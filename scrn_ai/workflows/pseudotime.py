@@ -1,9 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Pseudotime trajectory analysis workflow.
+scRN_AI v0.1.0
 
-Unified interface for small and large-scale pseudotime analysis,
-supporting DPT, diffusion maps, BLTSA, and VIA/STAVIA.
+Unified pseudotime trajectory analysis (DPT, diffusion, BLTSA, VIA).
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
@@ -172,3 +178,6 @@ def _save(adata, output_file):
         adata.write_h5ad(output_path / "results.h5ad")
         adata.obs[['pseudotime']].to_csv(output_path / "pseudotime.csv")
         print(f"[pseudotime] Results saved to directory: {output_path}")
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

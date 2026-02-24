@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Phase 2 Testing Suite - AItyping Module
+scRN_AI v0.1.0
 
-Tests for AI-powered cell type identification functionality.
-Note: Some tests require OPENAI_API_KEY to be set.
+Phase 2 implementation tests.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import subprocess
@@ -206,3 +210,6 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

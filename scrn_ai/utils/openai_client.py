@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-OpenAI API client for cell type identification.
+scRN_AI v0.1.0
 
-This module provides a wrapper around the OpenAI API for:
-- Cell type prediction from marker genes
-- Confidence scoring
-- Rate limiting and error handling
-- Prompt engineering for accurate predictions
+OpenAI API wrapper for cell type prediction with rate limiting.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import os
@@ -304,3 +306,6 @@ Respond ONLY with valid JSON, no additional text."""
                 progress_callback(idx, total)
         
         return predictions
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

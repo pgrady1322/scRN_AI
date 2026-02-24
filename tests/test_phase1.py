@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Test script to verify Phase 1 command alignment.
+scRN_AI v0.1.0
 
-This script tests that all new commands are accessible and show proper help.
+Phase 1 implementation tests.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import subprocess
 import sys
 
@@ -93,3 +99,6 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

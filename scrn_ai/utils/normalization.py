@@ -1,7 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Utility: normalise an AnnData file in-place and write new file.
-Supports log1p, scran, sctransform, size-factor.
+scRN_AI v0.1.0
+
+In-place AnnData normalization (log1p, scran, sctransform, size-factor).
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import scanpy as sc, anndata as ad, pathlib as p, numpy as np
 
 def run(infile, outfile, method):
@@ -35,3 +43,6 @@ def run(infile, outfile, method):
         raise ValueError(f"Unknown method: {method}")
 
     adata.write_h5ad(outfile)
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

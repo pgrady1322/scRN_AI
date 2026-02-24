@@ -1,6 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Setup script for scrn_ai - Single-cell RNA-seq analysis toolkit
+scRN_AI v0.1.0
+
+Package installation and dependency configuration.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 from setuptools import setup, find_packages
 
 setup(
@@ -45,3 +54,6 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
 )
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

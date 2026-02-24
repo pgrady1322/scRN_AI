@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
+scRN_AI v0.1.0
+
 Marker gene detection for cell type identification.
 
-This module provides utilities for:
-- Auto-detection of highly variable genes
-- Cluster-specific marker identification
-- Differential expression analysis
-- Gene filtering and validation
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import numpy as np
@@ -338,3 +340,6 @@ def get_marker_expression_summary(
             })
     
     return pd.DataFrame(summary)
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

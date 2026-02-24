@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Configuration parser for scrn_ai pipelines.
+scRN_AI v0.1.0
 
-Handles YAML configuration file parsing, validation, command-line overrides,
-and environment variable substitution.
+YAML configuration parser with validation, CLI overrides, and env-var substitution.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import os
@@ -366,3 +371,6 @@ class ConfigParser:
     def __str__(self) -> str:
         """Pretty print configuration."""
         return yaml.dump(self.config, default_flow_style=False)
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

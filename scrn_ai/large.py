@@ -1,6 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Large-scale trajectory workflow with STAVIA (VIA 2.0).
+scRN_AI v0.1.0
+
+Large-scale trajectory workflow using STAVIA (VIA 2.0).
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import anndata as ad
 import pathlib as p
 import scanpy as sc
@@ -40,3 +49,6 @@ def _save(adata, out):
         adata.write(out)
     else:
         adata.obs.to_csv(out, sep="\t")
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Utility modules for scrn_ai.
+scRN_AI v0.1.0
 
-This package contains helper functions for normalization, plotting,
-marker gene detection, OpenAI integration, data export, and merging.
+Utility subpackage — re-exports all utility modules.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 from . import export
@@ -20,3 +25,6 @@ __all__ = [
     "openai_client",
     "plot",
 ]
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

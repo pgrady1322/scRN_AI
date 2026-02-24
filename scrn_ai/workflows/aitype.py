@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-AI-powered cell type identification workflow.
+scRN_AI v0.1.0
 
-This module implements the AItyping functionality for automated
-cell type annotation using OpenAI's GPT models.
+AI-powered cell type annotation using OpenAI GPT models.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import os
@@ -312,3 +317,6 @@ def _save_results(
     output_h5ad = output_dir / f"{timing}_annotated.h5ad"
     adata.write_h5ad(output_h5ad)
     print(f"  - {timing}_annotated.h5ad: Updated AnnData with cell type annotations")
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

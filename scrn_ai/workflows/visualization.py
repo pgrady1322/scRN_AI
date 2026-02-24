@@ -1,8 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-UMAP visualization workflow.
+scRN_AI v0.1.0
 
-Generates UMAP embeddings and visualizations with optional cell type overlays.
+UMAP embedding generation and visualization.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
@@ -75,3 +82,6 @@ def run_umap(input_file, output_file, color_by="leiden", n_neighbors=15, min_dis
     plt.close(fig)
     
     print("[umap] Complete!")
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

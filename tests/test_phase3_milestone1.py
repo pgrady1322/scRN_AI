@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Comprehensive test suite for Phase 3 Milestone 1 - Configuration Parser
+scRN_AI v0.1.0
 
-Tests all configuration parser functionality including:
-- Loading defaults
-- Loading YAML config files
-- Environment variable substitution
-- CLI overrides
-- Validation
-- Error handling
+Phase 3 milestone 1 tests.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import os
@@ -379,3 +378,6 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Test suite for configuration parser.
+scRN_AI v0.1.0
 
-Tests YAML loading, validation, defaults merging, and environment
-variable substitution.
+Tests for YAML configuration parser.
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
 
 import os
@@ -177,3 +182,6 @@ class TestConfigParser:
 if __name__ == '__main__':
     # Run tests
     pytest.main([__file__, '-v'])
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.

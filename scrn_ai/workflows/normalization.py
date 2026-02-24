@@ -1,9 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Normalization workflow supporting multiple methods.
+scRN_AI v0.1.0
 
-Supports Seurat (LogNormalize, SCTransform), JMP (TMM, RLE, UpperQuartile),
-and basic methods (log1p, scran, sctransform).
+Multi-method normalization workflow (Seurat, JMP, basic).
+
+Author: Patrick Grady
+Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
+License: GNU General Public License v3.0 - See LICENSE
 """
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
@@ -205,3 +211,6 @@ def _save(adata, output_file):
     output_path = p.Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(output_path)
+
+# scRN_AI v0.1.0
+# Any usage is subject to this software's license.
