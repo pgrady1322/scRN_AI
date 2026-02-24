@@ -3,6 +3,17 @@
 This repository provides a modular, containerized workflow for **single-cell RNA sequencing (scRNA-seq) data analysis**, supporting both **dense and sparse matrix inputs**.  
 While **PIPSeeker** is the default preprocessing module, the workflow is compatible with any equivalent tool that outputs a valid **matrix format** (e.g. `.mtx`, `.h5ad`, `.loom`, `.csv`).
 
+## Example Output — PBMC 3k
+
+### Canonical Marker Gene UMAPs
+![Marker UMAPs](docs/figures/marker_umaps.png)
+
+### Expression Dot Plot by Cell Type
+![Expression Dot Plot](docs/figures/dotplot_expression.png)
+
+### Diffusion Pseudotime
+![Pseudotime UMAP](docs/figures/pseudotime_umap.png)
+
 ## Try It Now
 
 > **[PBMC 3k Pipeline Demo Notebook](examples/pbmc3k_pipeline_demo.ipynb)** — full end-to-end walkthrough on real PBMC data.  

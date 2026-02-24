@@ -37,7 +37,7 @@ def run(infile, species, method, run_bltsa, outfile):
 
     if method.lower() == "dpt":
         logger.info("Running Diffusion Pseudotime (DPT)")
-        sc.tl.diffusion_map(adata)
+        sc.tl.diffmap(adata)
         sc.tl.dpt(adata)
         adata.obs["pseudotime"] = adata.obs["dpt_pseudotime"]
     else:         # dtflow

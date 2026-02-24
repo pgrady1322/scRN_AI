@@ -46,7 +46,7 @@ def umap_pseudotime(
     fig = sc.pl.umap(adata, color=key, cmap="viridis", show=False, return_fig=True)
     if save:
         _save_fig(fig, save)
-    plt.close(fig)
+        plt.close(fig)
 
 
 # ── QC plots ─────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ def qc_violin(
     fig.tight_layout()
     if save:
         _save_fig(fig, save)
-    plt.close(fig)
+        plt.close(fig)
 
 
 def qc_scatter(
@@ -122,7 +122,7 @@ def qc_scatter(
     fig.tight_layout()
     if save:
         _save_fig(fig, save)
-    plt.close(fig)
+        plt.close(fig)
 
 
 # ── Gene expression plots ───────────────────────────────────────────────
@@ -149,7 +149,7 @@ def dotplot(
     fig = sc.pl.dotplot(adata, var_names=genes, groupby=groupby, show=False, return_fig=True)
     if save:
         fig.savefig(save, dpi=300, bbox_inches="tight")
-    plt.close("all")
+        plt.close("all")
 
 
 def stacked_violin(
@@ -176,7 +176,7 @@ def stacked_violin(
     )
     if save:
         fig.savefig(save, dpi=300, bbox_inches="tight")
-    plt.close("all")
+        plt.close("all")
 
 
 # ── Pseudotime plots ────────────────────────────────────────────────────
@@ -234,7 +234,7 @@ def pseudotime_heatmap(
     fig.tight_layout()
     if save:
         _save_fig(fig, save)
-    plt.close(fig)
+        plt.close(fig)
 
 
 # ── Internal helpers ─────────────────────────────────────────────────────

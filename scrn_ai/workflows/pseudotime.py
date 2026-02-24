@@ -77,7 +77,7 @@ def _run_small_scale(adata, method, root_cell=None):
         logger.info("Running Diffusion Pseudotime (DPT)...")
         
         # Compute diffusion map
-        sc.tl.diffusion_map(adata)
+        sc.tl.diffmap(adata)
         
         # Set root cell if provided
         if root_cell is not None:
@@ -92,7 +92,7 @@ def _run_small_scale(adata, method, root_cell=None):
         
     elif method == "diffusion":
         logger.info("Running Diffusion Maps...")
-        sc.tl.diffusion_map(adata)
+        sc.tl.diffmap(adata)
         adata.obs['pseudotime'] = adata.obsm['X_diffmap'][:, 0]  # First diffusion component
         
     elif method == "bltsa":

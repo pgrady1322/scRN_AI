@@ -73,7 +73,8 @@ def find_cluster_markers(
     method: str = "wilcoxon",
     min_fold_change: float = 1.5,
     max_pval: float = 0.05,
-    only_positive: bool = True
+    only_positive: bool = True,
+    use_raw: Optional[bool] = None,
 ) -> Dict[str, List[str]]:
     """
     Identify marker genes for each cluster.
@@ -94,6 +95,9 @@ def find_cluster_markers(
         Maximum adjusted p-value to consider significant.
     only_positive : bool
         Only return upregulated markers.
+    use_raw : bool, optional
+        Use ``adata.raw`` for fold-change calculation.  Defaults to *True*
+        when ``adata.raw`` is set (recommended after ``sc.pp.scale()``).
     
     Returns
     -------
@@ -104,12 +108,16 @@ def find_cluster_markers(
     if cluster_key not in adata.obs.columns:
         raise ValueError(f"Cluster key '{cluster_key}' not found in adata.obs")
     
+    # Default: use raw layer when available (avoids NaN fold changes on scaled data)
+    if use_raw is None:
+        use_raw = adata.raw is not None
+
     # Run differential expression
     sc.tl.rank_genes_groups(
         adata,
         groupby=cluster_key,
         method=method,
-        use_raw=False,
+        use_raw=use_raw,
         n_genes=n_genes * 2  # Get more initially for filtering
     )
     
