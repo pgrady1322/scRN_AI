@@ -10,15 +10,22 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: GNU General Public License v3.0 - See LICENSE
 """
 
+import logging
+import os
+
 import scanpy as sc
 import anndata as ad
 import pathlib as p
 
-def run(infile, species, method, bltsa, outfile):
+logger = logging.getLogger(__name__)
+
+
+def run(infile, species, method, run_bltsa, outfile):
     adata = _read_any(infile)
     adata.uns["species"] = species
 
     # Basic QC & normalisation
+    logger.info("Preprocessing %d cells × %d genes", adata.n_obs, adata.n_vars)
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
     sc.pp.highly_variable_genes(adata, n_top_genes=3000, subset=True)
@@ -29,19 +36,43 @@ def run(infile, species, method, bltsa, outfile):
     sc.pp.neighbors(adata)
 
     if method.lower() == "dpt":
+        logger.info("Running Diffusion Pseudotime (DPT)")
         sc.tl.diffusion_map(adata)
         sc.tl.dpt(adata)
         adata.obs["pseudotime"] = adata.obs["dpt_pseudotime"]
     else:         # dtflow
+        logger.info("Running DTFlow pseudotime")
         import dtflow
-        adata.obs["pseudotime"] = dtflow.run(adata)         # quick wrapper
+        adata.obs["pseudotime"] = dtflow.run(adata)
 
-    if bltsa:
-        from BLTSA import bltsa
-        adata.obs["bltsa_pt"] = bltsa.run(adata.X)
+    if run_bltsa:
+        logger.info("Running BLTSA trajectory refinement")
+        try:
+            import rpy2.robjects as ro
+            from rpy2.robjects import pandas2ri
+            from scipy import sparse
+            pandas2ri.activate()
+
+            ro.globalenv["expression_matrix"] = (
+                adata.X if not sparse.issparse(adata.X) else adata.X.toarray()
+            )
+            bltsa_path = os.environ.get("BLTSA_PATH", "/opt/BLTSA/BLTSA.R")
+            logger.info("Loading BLTSA from %s", bltsa_path)
+
+            ro.r(f'''
+                source("{bltsa_path}")
+                result <- BLTSA_trajectory(expression_matrix)
+                pseudotime <- result$pseudotime
+            ''')
+
+            import numpy as np
+            adata.obs["bltsa_pt"] = np.array(ro.r["pseudotime"])
+        except Exception as exc:
+            logger.warning("BLTSA failed (%s), skipping", exc)
 
     # Save result
     _save(adata, outfile)
+    logger.info("Saved results to %s", outfile)
 
 def _read_any(path):
     path = p.Path(path)
