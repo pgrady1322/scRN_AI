@@ -9,9 +9,7 @@ Anthropic Claude Opus 4.6 used for code formatting and cleanup assistance.
 License: MIT License - See LICENSE
 """
 
-from . import export, marker_detection, merge, normalization, openai_client, plot
-
-__all__ = [
+_SUBMODULES = [
     "export",
     "marker_detection",
     "merge",
@@ -19,6 +17,18 @@ __all__ = [
     "openai_client",
     "plot",
 ]
+
+__all__ = list(_SUBMODULES)
+
+
+def __getattr__(name: str):
+    """Lazy-load utility modules so that ``from scrn_ai import utils``
+    does not eagerly import scanpy / matplotlib / etc."""
+    if name in _SUBMODULES:
+        import importlib
+
+        return importlib.import_module(f".{name}", __name__)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.
