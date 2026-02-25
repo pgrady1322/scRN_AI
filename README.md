@@ -5,10 +5,10 @@ While **PIPSeeker** is the default preprocessing module, the workflow is compati
 
 ## Example Output — PBMC 3k
 
-### Canonical Marker Gene UMAPs
+### Canonical Marker Gene UMAP (scanpy-based)
 ![Marker UMAPs](docs/figures/marker_umaps.png)
 
-### Expression Dot Plot by Cell Type
+### Expression Dot Plot by Cell Type (scanpy-based)
 ![Expression Dot Plot](docs/figures/dotplot_expression.png)
 
 ### Diffusion Pseudotime
