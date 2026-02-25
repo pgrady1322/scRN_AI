@@ -26,5 +26,6 @@ def __getattr__(name: str):
         return importlib.import_module(f".{name}", __name__)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
+
 # scRN_AI v1.0.0
 # Any usage is subject to this software's license.
