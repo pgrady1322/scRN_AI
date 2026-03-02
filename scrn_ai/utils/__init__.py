@@ -10,11 +10,11 @@ License: MIT License - See LICENSE
 """
 
 _SUBMODULES = [
+    "cytetype_client",
     "export",
     "marker_detection",
     "merge",
     "normalization",
-    "openai_client",
     "plot",
 ]
 

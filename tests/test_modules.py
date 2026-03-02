@@ -9,7 +9,7 @@ Tests cover:
   - Workflow module imports
   - Utility module imports
   - Marker-detection filtering logic
-  - OpenAI client initialisation (no API calls)
+  - CyteType client initialisation (no API calls)
   - Version metadata
 
 Author: Patrick Grady
@@ -82,8 +82,8 @@ class TestWorkflowImports:
 class TestUtilityImports:
     """Each utility module can be imported."""
 
-    def test_openai_client(self):
-        from scrn_ai.utils.openai_client import OpenAIClient  # noqa: F401
+    def test_cytetype_client(self):
+        from scrn_ai.utils.cytetype_client import CyteTypeClient  # noqa: F401
 
     def test_marker_detection(self):
         from scrn_ai.utils.marker_detection import get_top_markers_per_cluster  # noqa: F401
@@ -168,21 +168,28 @@ class TestMarkerDetection:
         assert callable(validate_marker_genes)
 
 
-# ── OpenAI client ────────────────────────────────────────────────────────
+# ── CyteType client ────────────────────────────────────────────────────────
 
 
-class TestOpenAIClient:
-    """OpenAIClient can be initialised without making API calls."""
+class TestCyteTypeClient:
+    """CyteTypeClient can be imported and CellTypePrediction is accessible."""
 
-    def test_init_with_dummy_key(self):
-        from scrn_ai.utils.openai_client import OpenAIClient
+    def test_import_client(self):
+        from scrn_ai.utils.cytetype_client import CyteTypeClient  # noqa: F401
 
-        # Should not raise — no actual API call happens until query time
-        try:
-            client = OpenAIClient(api_key="sk-test-dummy-key-00000000")
+    def test_import_prediction(self):
+        from scrn_ai.utils.cytetype_client import CellTypePrediction  # noqa: F401
+
+    def test_init_without_cytetype(self):
+        """Client raises ImportError when cytetype is not installed."""
+        from scrn_ai.utils.cytetype_client import CyteTypeClient, CYTETYPE_AVAILABLE
+
+        if not CYTETYPE_AVAILABLE:
+            with pytest.raises(ImportError):
+                CyteTypeClient()
+        else:
+            client = CyteTypeClient()
             assert client is not None
-        except ImportError:
-            pytest.skip("openai package not installed")
 
 
 # scRN_AI v1.0.0

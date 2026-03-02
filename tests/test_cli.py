@@ -58,14 +58,13 @@ class TestPhase2CLI:
         "flag",
         [
             "--timing",
-            "--model",
             "--confidence-threshold",
-            "--marker-genes",
-            "--n-markers",
+            "--n-top-genes",
             "--max-clusters",
             "--species",
             "--tissue",
             "--cluster-key",
+            "--study-context",
         ],
     )
     def test_aitype_options(self, runner, cli, flag):

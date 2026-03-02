@@ -39,7 +39,7 @@ pip install -e .            # core deps only
 # or
 pip install -e ".[dev]"     # + pytest, ruff, ipykernel
 # or
-pip install -e ".[all]"     # + openai, loompy, rpy2, pyVIA
+pip install -e ".[all]"     # + cytetype, loompy, rpy2, pyVIA
 ```
 
 ### Option 2: conda (full install with R integration)
@@ -79,10 +79,10 @@ flowchart LR
     G -- Complex Trait /<br/>Multi-species --> J[Atlas-Level<br/>StaVIA Planned]
     
     %% AItyping integration (NEW)
-    E -.Optional: Pre-Analysis.-> AI[AI Cell Typing<br/>scrn_ai aitype]
+    E -.Optional: Pre-Analysis.-> AI[AI Cell Typing<br/>CyteType]
     F -.Optional: Pre-Analysis.-> AI
     AI --> G
-    I -.Optional: Post-Analysis.-> AI2[AI Cell Typing<br/>scrn_ai aitype]
+    I -.Optional: Post-Analysis.-> AI2[AI Cell Typing<br/>CyteType]
     AI2 --> K
     
     H --> K[Export Results<br/>Visualization]
@@ -141,7 +141,7 @@ The workflow runs in a **single, unified Docker container** (`scrn_ai`) that inc
 |---------|---------------|-------------|
 | **Preprocessing** | CLI: `scrn_ai preprocess` | QC filtering with multi-format support (.mtx, .h5ad, .loom, .csv). Filters cells/genes by count thresholds and mitochondrial content. |
 | **Normalization** | CLI: `scrn_ai normalize` | Unified normalization supporting Seurat (LogNormalize, SCTransform via R), JMP (TMM, RLE, UpperQuartile via edgeR), and basic methods (log1p, scran, sctransform). |
-| **AI Cell Type Identification** | CLI: `scrn_ai aitype` | **NEW ✨** - AI-powered cell type annotation using OpenAI GPT models. Supports pre/post-analysis workflows with marker gene auto-detection and confidence scoring. |
+| **AI Cell Type Identification** | CLI: `scrn_ai aitype` | **NEW ✨** - Agentic, evidence-based cell type annotation powered by [CyteType](https://github.com/NygenAnalytics/CyteType). Multi-agent AI with Cell Ontology mapping, confidence scoring, and literature evidence. No API keys required. |
 | **Dimensional Reduction** | CLI: `scrn_ai umap` | UMAP/PCA visualization for sample exploration with optional cell type overlays. |
 | **Pseudotime Analysis** | CLI: `scrn_ai pseudotime` | Unified interface supporting DPT (diffusion pseudotime), BLTSA (branching), and VIA/STAVIA (large-scale) methods. |
 | **Utility Functions** | CLI: `scrn_ai ad_merge`, `ad_export`, `ad_norm` | AnnData manipulation tools for merging datasets, exporting to various formats, and basic normalization. |
@@ -207,10 +207,10 @@ scRN_AI/
     │   ├── normalization.py      # Seurat / JMP / log1p / scran / sctransform
     │   ├── visualization.py      # UMAP/PCA plotting
     │   ├── pseudotime.py         # DPT / diffusion / BLTSA / VIA
-    │   └── aitype.py             # AI cell typing via OpenAI GPT
+    │   └── aitype.py             # AI cell typing via CyteType
     └── utils/
         ├── __init__.py
-        ├── openai_client.py      # OpenAI API wrapper with rate limiting
+        ├── cytetype_client.py    # CyteType wrapper for evidence-based annotation
         ├── marker_detection.py   # Cluster marker gene identification
         ├── normalization.py      # Thin wrapper → delegates to workflows
         ├── plot.py               # QC violins, dotplots, pseudotime heatmaps
@@ -290,13 +290,11 @@ scrn_ai normalize \
     --algorithm TMM
 
 # Step 3: AI Cell Type Identification (Optional - NEW ✨)
-# Pre-analysis: Identify cell types before clustering to guide analysis
-export OPENAI_API_KEY="your-api-key-here"
+# CyteType — no API keys required
 scrn_ai aitype \
     --input data/output/normalized.h5ad \
     --output data/output/cell_types/ \
     --timing pre_analysis \
-    --model gpt-4 \
     --species human
 
 # Step 4: UMAP visualization
@@ -317,8 +315,7 @@ scrn_ai pseudotime \
 scrn_ai aitype \
     --input data/output/pseudotime/pseudotime_results.h5ad \
     --output data/output/cell_types_post/ \
-    --timing post_analysis \
-    --model gpt-4-turbo
+    --timing post_analysis
 
 # Alternative: Large-scale pseudotime with VIA
 scrn_ai pseudotime \
@@ -371,13 +368,12 @@ docker run -v $(pwd)/data:/data scrn_ai:0.1 normalize \
     --algorithm TMM
 
 # Step 3: AI Cell Type Identification (Optional - NEW ✨)
-# Pre-analysis: Identify cell types before clustering to guide analysis
-docker run -e OPENAI_API_KEY="$OPENAI_API_KEY" \
+# CyteType — no API keys required
+docker run \
     -v $(pwd)/data:/data scrn_ai:0.1 aitype \
     --input /data/output/normalized.h5ad \
     --output /data/output/cell_types/ \
     --timing pre_analysis \
-    --model gpt-4 \
     --species human
 
 # Step 4: UMAP visualization
@@ -395,12 +391,11 @@ docker run -v $(pwd)/data:/data scrn_ai:0.1 pseudotime \
     --scale small
 
 # Alternative: Post-analysis cell typing (annotate pseudotime results)
-docker run -e OPENAI_API_KEY="$OPENAI_API_KEY" \
+docker run \
     -v $(pwd)/data:/data scrn_ai:0.1 aitype \
     --input /data/output/pseudotime/pseudotime_results.h5ad \
     --output /data/output/cell_types_post/ \
-    --timing post_analysis \
-    --model gpt-4-turbo
+    --timing post_analysis
 
 # Alternative: Large-scale pseudotime with VIA
 docker run -v $(pwd)/data:/data scrn_ai:0.1 pseudotime \
@@ -716,25 +711,24 @@ scrn_ai pseudotime \
 ```
 
 ### `scrn_ai aitype` ✨
-**Purpose**: AI-powered cell type identification using OpenAI GPT models
+**Purpose**: Agentic, evidence-based cell type annotation powered by [CyteType](https://github.com/NygenAnalytics/CyteType)
 
 **Parameters**:
 - `--input, -i`: Input .h5ad file [required]
 - `--output, -o`: Output directory for annotations [required]
 - `--timing`: When to perform typing (pre_analysis, post_analysis, both) [default: pre_analysis]
-- `--model, -m`: OpenAI model to use (gpt-4, gpt-4-turbo, gpt-3.5-turbo) [default: gpt-4]
 - `--confidence-threshold`: Minimum confidence score (0.0-1.0) [default: 0.7]
-- `--marker-genes`: Path to custom marker gene CSV (optional)
-- `--n-markers`: Number of marker genes per cluster (default: 10)
+- `--n-top-genes`: Number of top marker genes per cluster for CyteType (default: 100)
 - `--max-clusters`: Maximum clusters to process (default: 50)
 - `--species`: Species (human, mouse, etc.) [default: human]
 - `--tissue`: Tissue type (optional, e.g., "brain", "blood")
 - `--cluster-key`: Cluster column in .obs (default: leiden)
+- `--study-context`: Free-text study context (e.g., "Human PBMC from healthy donor")
 
 **Setup**:
-Set your OpenAI API key as an environment variable:
+No API keys required! CyteType works out of the box.
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+pip install cytetype
 ```
 
 **Example - Pre-Analysis** (annotate before analysis to guide clustering):
@@ -743,7 +737,6 @@ scrn_ai aitype \
     --input normalized.h5ad \
     --output cell_type_annotations/ \
     --timing pre_analysis \
-    --model gpt-4 \
     --confidence-threshold 0.7 \
     --species human \
     --tissue brain
@@ -755,32 +748,30 @@ scrn_ai aitype \
     --input pseudotime_results.h5ad \
     --output annotations_post/ \
     --timing post_analysis \
-    --model gpt-4-turbo \
-    --n-markers 15
+    --n-top-genes 150
 ```
 
-**Example - Custom Markers**:
+**Example - With Study Context**:
 ```bash
 scrn_ai aitype \
     --input normalized.h5ad \
     --output custom_annotations/ \
-    --marker-genes my_markers.csv \
-    --model gpt-3.5-turbo
+    --study-context "Human PBMC from healthy donor"
 ```
 
 **Output Files**:
-- `{timing}_annotations.csv`: Cell type predictions per cluster
+- `{timing}_annotations.csv`: Cell type predictions per cluster (with Cell Ontology IDs)
 - `{timing}_confidence_scores.csv`: Confidence scores and alternative predictions
-- `{timing}_marker_genes.csv`: Marker genes used for each cluster
-- `{timing}_reasoning.txt`: AI reasoning explanations for each prediction
+- `{timing}_reasoning.txt`: CyteType reasoning and literature references for each prediction
 - `{timing}_low_confidence.csv`: Clusters below confidence threshold (need manual review)
 - `{timing}_annotated.h5ad`: Updated AnnData with cell type annotations
 
 **Notes**:
-- Requires valid OpenAI API key (charges apply based on API usage)
-- GPT-4 provides more accurate results but costs more than GPT-3.5-turbo
-- Confidence threshold filters uncertain predictions (increase for stricter results)
-- Custom marker genes must be a CSV with columns: cluster, marker_gene
+- No API keys required for the default CyteType configuration
+- CyteType outperforms GPTCellType by +388%, CellTypist by +268%, SingleR by +101%
+- Provides Cell Ontology (CL) IDs for standardised terminology
+- Each annotation includes linked literature references
+- See [CyteType docs](https://github.com/NygenAnalytics/CyteType/blob/master/docs/configuration.md) for LLM customisation
 
 ### Utility Commands
 
@@ -1063,17 +1054,19 @@ See the full [TESTING.md](TESTING.md) guide for detailed troubleshooting steps.
   - Pre-analysis cell typing (guide clustering)
   - Post-analysis cell typing (annotate trajectories)
   - Automatic marker gene detection
-  - Custom marker gene support
+  - [CyteType](https://github.com/NygenAnalytics/CyteType) multi-agent AI integration
+  - Cell Ontology (CL) ID mapping
+  - Linked literature references for every annotation
+  - Pre-analysis cell typing (guide clustering)
+  - Post-analysis cell typing (annotate trajectories)
+  - Automatic marker gene detection
   - Confidence scoring and filtering
-  - Multi-format output (6 file types)
-- ✅ **OpenAI API client** (`scrn_ai.utils.openai_client`)
-  - Rate limiting and retry logic
-  - Batch processing support
-  - Prompt engineering for cell typing
-- ✅ **Marker detection utilities** (`scrn_ai.utils.marker_detection`)
-  - HVG identification
-  - Differential expression analysis
-  - Gene filtering (ribosomal/mitochondrial/HSP)
+  - Multi-format output (5 file types)
+  - No API keys required by default
+- ✅ **CyteType client** (`scrn_ai.utils.cytetype_client`)
+  - Wraps CyteType's agentic annotation pipeline
+  - Evidence-based cell type predictions
+  - Cell Ontology integrationdrial/HSP)
 - ✅ **Testing infrastructure**
   - Quick test suite (11/11 commands)
   - Phase 1 and Phase 2 test suites
@@ -1093,8 +1086,7 @@ See the full [TESTING.md](TESTING.md) guide for detailed troubleshooting steps.
 - ☐ Web-based dashboard for interactive visualization
 
 ---
-
-## Citation
+itation
 
 If you use this workflow, please cite:
 - Relevant single-cell analysis tools (Seurat, BLTSA, StaVIA, etc.)

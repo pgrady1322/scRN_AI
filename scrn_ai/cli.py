@@ -208,29 +208,16 @@ def pseudotime(input, output, method, scale, root_cell):
     help="When to run: pre_analysis (before UMAP), post_analysis (after trajectories), or both.",
 )
 @click.option(
-    "--model",
-    "-m",
-    default="gpt-4",
-    type=click.Choice(["gpt-4", "gpt-4-turbo", "gpt-3.5-turbo"], case_sensitive=False),
-    help="OpenAI model to use (default: gpt-4).",
-)
-@click.option(
     "--confidence-threshold",
     type=float,
     default=0.7,
     help="Minimum confidence score to accept (0.0-1.0, default: 0.7).",
 )
 @click.option(
-    "--marker-genes",
-    type=click.Path(exists=True),
-    default=None,
-    help="Optional: Path to custom marker gene CSV file.",
-)
-@click.option(
-    "--n-markers",
+    "--n-top-genes",
     type=int,
-    default=10,
-    help="Number of top marker genes per cluster (default: 10).",
+    default=100,
+    help="Number of top marker genes per cluster for CyteType (default: 100).",
 )
 @click.option(
     "--max-clusters",
@@ -245,27 +232,29 @@ def pseudotime(input, output, method, scale, root_cell):
     default="leiden",
     help="Key in adata.obs containing cluster assignments (default: leiden).",
 )
+@click.option(
+    "--study-context",
+    default=None,
+    help="Free-text study context (e.g., 'Human PBMC from healthy donor').",
+)
 def aitype(
     input,
     output,
     timing,
-    model,
     confidence_threshold,
-    marker_genes,
-    n_markers,
+    n_top_genes,
     max_clusters,
     species,
     tissue,
     cluster_key,
+    study_context,
 ):
     """
-    AI-powered cell type identification using ChatGPT.
+    AI-powered cell type identification using CyteType.
 
-    Uses OpenAI's GPT models to automatically identify cell types based on
-    marker genes. Can run before analysis (pre_analysis) to guide UMAP/clustering,
-    or after analysis (post_analysis) to annotate trajectories.
-
-    Requires OPENAI_API_KEY environment variable to be set.
+    Uses CyteType's multi-agent AI architecture for evidence-based cell
+    type annotation with Cell Ontology mapping, confidence scoring, and
+    linked literature references.  No API keys required by default.
 
     Timing:
       - pre_analysis: Run after normalization, before UMAP/pseudotime
@@ -281,14 +270,13 @@ def aitype(
         input_path=input,
         output_dir=output,
         timing=timing,
-        model=model,
         confidence_threshold=confidence_threshold,
-        marker_genes=marker_genes,
-        n_markers=n_markers,
+        n_top_genes=n_top_genes,
         max_clusters=max_clusters,
         species=species,
         tissue=tissue,
         cluster_key=cluster_key,
+        study_context=study_context,
     )
 
 

@@ -39,9 +39,9 @@ dependencies = [
 [project.optional-dependencies]
 r = ["rpy2>=3.5"]
 via = ["pyVIA>=0.1"]
-ai = ["openai>=1.0.0"]
+ai = ["cytetype>=0.17.0"]
 export = ["loompy>=3.0"]
-all = ["rpy2>=3.5", "pyVIA>=0.1", "openai>=1.0.0", "loompy>=3.0"]
+all = ["rpy2>=3.5", "pyVIA>=0.1", "cytetype>=0.17.0", "loompy>=3.0"]
 dev = ["pytest>=7.0", "ruff>=0.4", "ipywidgets>=8.0", "ipykernel>=6.0"]
 
 [project.scripts]

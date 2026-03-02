@@ -33,14 +33,14 @@ analysis:
   pseudotime_scale: "small"  # <50k cells
   root_cell: null
   
-  # AI cell typing settings
+  # AI cell typing settings (CyteType — no API keys required)
   run_aitype: false  # Opt-in for AI typing
   aitype_timing: "pre_analysis"  # pre_analysis, post_analysis, both
-  aitype_model: "gpt-4"
   aitype_confidence_threshold: 0.7
   aitype_species: "human"
   aitype_tissue: null
-  aitype_n_markers: 10
+  aitype_n_top_genes: 100  # CyteType recommended default
+  aitype_study_context: null  # e.g. "Human PBMC from healthy donor"
 
 # Output configuration
 output:

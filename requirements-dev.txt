@@ -18,8 +18,8 @@ ipykernel>=6.0
 ipywidgets>=8.0
 
 # ── Optional features ────────────────────────────────────────────────
-# AI-powered cell typing (requires OpenAI API key)
-openai>=1.0.0
+# AI-powered cell typing (CyteType — no API keys required)
+cytetype>=0.17.0
 
 # Export to loom format
 loompy>=3.0
